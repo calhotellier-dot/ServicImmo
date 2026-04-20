@@ -60,3 +60,6 @@ supabase/.branches
 
 # dossier de fichiers bruts (docs internes non-versionnées)
 files/
+
+# config locale Claude Code (specific à la machine)
+.claude/
