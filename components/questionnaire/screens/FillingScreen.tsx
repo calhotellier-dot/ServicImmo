@@ -1,13 +1,14 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { ProjectType } from "@/lib/diagnostics/types";
 
 import { useQuestionnaireStore } from "@/lib/stores/questionnaire";
 
 import { Accordion } from "../components/Accordion";
+import { AddressAutocomplete } from "../components/AddressAutocomplete";
 import { Chips } from "../components/Chips";
 import { Field } from "../components/Field";
 import { Label } from "../components/Label";
@@ -124,6 +125,11 @@ export function FillingScreen({
   const [open, setOpen] = useState<AccordionKey>("prop");
   const toggle = (k: Exclude<AccordionKey, null>) => setOpen(open === k ? null : k);
 
+  // ─── Progressive disclosure ─────────────────────────────────────────
+  // On ne révèle l'accordéon N+1 qu'une fois N complété. Quand l'accordéon
+  // courant bascule à "done", on ouvre automatiquement le suivant pour
+  // guider l'utilisateur sans qu'il ait à deviner l'ordre.
+
   // ─── Completion flags par accordéon (pour afficher la pastille "done") ───
   const propDone =
     !!data.property_type &&
@@ -166,6 +172,46 @@ export function FillingScreen({
 
   const emailSummary = emailDone ? data.email : undefined;
 
+  // Auto-open du suivant : quand un accordéon bascule done → true, on ouvre
+  // automatiquement le suivant si l'utilisateur est encore sur le courant.
+  const prevRef = useRef({ propDone, techDone, timeDone });
+  useEffect(() => {
+    const p = prevRef.current;
+    if (propDone && !p.propDone && open === "prop") setOpen("tech");
+    else if (techDone && !p.techDone && open === "tech") setOpen("time");
+    else if (timeDone && !p.timeDone && open === "time") setOpen("email");
+    prevRef.current = { propDone, techDone, timeDone };
+  }, [propDone, techDone, timeDone, open]);
+
+  const completedCount = [propDone, techDone, timeDone, emailDone].filter(Boolean).length;
+
+  // ─── Progressive disclosure au niveau du champ ─────────────────────────
+  // Chaque sous-bloc se révèle quand le précédent est renseigné. Les flags
+  // suivent l'ordre UX (plus naturel que l'ordre de déclaration des champs).
+  const hasPropType = !!data.property_type;
+  const hasAddress =
+    !!data.address &&
+    data.address.length >= 3 &&
+    !!data.postal_code &&
+    /^\d{5}$/.test(data.postal_code) &&
+    !!data.city;
+  const hasSurfaceRooms =
+    typeof data.surface === "number" &&
+    data.surface > 0 &&
+    typeof data.rooms_count === "number" &&
+    data.rooms_count >= 1;
+
+  // Pour l'accordéon technique, l'ordre dépend du type de projet.
+  const needsRentalFurnished = branch === "rental";
+  const needsWorksType = branch === "works";
+  const branchSpecDone =
+    (!needsRentalFurnished || !!data.rental_furnished) &&
+    (!needsWorksType || !!data.works_type);
+  const hasPermit = !!data.permit_date_range;
+  const hasHeating = !!data.heating_type;
+  const hasGasInstall = !!data.gas_installation;
+  const hasGasAge = data.gas_over_15_years !== undefined;
+
   return (
     <div
       style={getBranchVars(branch)}
@@ -198,6 +244,7 @@ export function FillingScreen({
 
         <div className="flex flex-col gap-2.5">
           {/* ─────────── Accordéon 1 : Le bien ─────────── */}
+          <div className="devis-reveal">
           <Accordion
             step={1}
             open={open === "prop"}
@@ -206,8 +253,8 @@ export function FillingScreen({
             title="Le bien"
             summary={propSummary}
           >
-            <div className="grid grid-cols-1 gap-4 pt-3 sm:grid-cols-2">
-              <div className="sm:col-span-2">
+            <div className="flex flex-col gap-4 pt-3">
+              <div className="devis-reveal">
                 <Label>Type de bien</Label>
                 <Chips
                   ariaLabel="Type de bien"
@@ -217,89 +264,83 @@ export function FillingScreen({
                 />
               </div>
 
-              <div className="sm:col-span-2">
-                <Label help="Renseignez l'adresse complète du bien.">Adresse du bien</Label>
-                <Field
-                  value={data.address ?? ""}
-                  onChange={(e) => updateData({ address: e.target.value })}
-                  placeholder="12 rue du Commerce"
-                  aria-label="Adresse"
-                />
-              </div>
+              {hasPropType ? (
+                <div className="devis-reveal">
+                  <Label help="Commencez à taper, nous remplissons le code postal et la ville automatiquement.">
+                    Adresse du bien
+                  </Label>
+                  <AddressAutocomplete
+                    address={data.address ?? ""}
+                    postalCode={data.postal_code ?? ""}
+                    city={data.city ?? ""}
+                    onSelect={({ address, postalCode, city }) =>
+                      updateData({ address, postal_code: postalCode, city })
+                    }
+                    onManualChange={(v) =>
+                      updateData({ address: v, postal_code: "", city: "" })
+                    }
+                  />
+                </div>
+              ) : null}
 
-              <div>
-                <Label>Code postal</Label>
-                <Field
-                  inputMode="numeric"
-                  pattern="[0-9]{5}"
-                  maxLength={5}
-                  value={data.postal_code ?? ""}
-                  onChange={(e) =>
-                    updateData({ postal_code: e.target.value.replace(/\D/g, "").slice(0, 5) })
-                  }
-                  placeholder="37000"
-                  aria-label="Code postal"
-                />
-              </div>
+              {hasAddress ? (
+                <div className="devis-reveal grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Surface</Label>
+                    <Field
+                      type="number"
+                      inputMode="numeric"
+                      min={1}
+                      max={10000}
+                      suffix="m²"
+                      value={data.surface ?? ""}
+                      onChange={(e) => {
+                        const v = e.target.value === "" ? undefined : Number(e.target.value);
+                        updateData({ surface: v });
+                      }}
+                      placeholder="92"
+                      aria-label="Surface en m²"
+                    />
+                  </div>
+                  <div>
+                    <Label>Nombre de pièces</Label>
+                    <Field
+                      type="number"
+                      inputMode="numeric"
+                      min={1}
+                      max={20}
+                      value={data.rooms_count ?? ""}
+                      onChange={(e) => {
+                        const v = e.target.value === "" ? undefined : Number(e.target.value);
+                        updateData({ rooms_count: v });
+                      }}
+                      placeholder="4"
+                      aria-label="Nombre de pièces"
+                    />
+                  </div>
+                </div>
+              ) : null}
 
-              <div>
-                <Label>Ville</Label>
-                <Field
-                  value={data.city ?? ""}
-                  onChange={(e) => updateData({ city: e.target.value })}
-                  placeholder="Tours"
-                  aria-label="Ville"
-                />
-              </div>
-
-              <div>
-                <Label>Surface</Label>
-                <Field
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={10000}
-                  suffix="m²"
-                  value={data.surface ?? ""}
-                  onChange={(e) => {
-                    const v = e.target.value === "" ? undefined : Number(e.target.value);
-                    updateData({ surface: v });
-                  }}
-                  placeholder="92"
-                  aria-label="Surface en m²"
-                />
-              </div>
-
-              <div>
-                <Label>Nombre de pièces</Label>
-                <Field
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={20}
-                  value={data.rooms_count ?? ""}
-                  onChange={(e) => {
-                    const v = e.target.value === "" ? undefined : Number(e.target.value);
-                    updateData({ rooms_count: v });
-                  }}
-                  placeholder="4"
-                  aria-label="Nombre de pièces"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <Label>Est-ce une copropriété ?</Label>
-                <RadioRow
-                  ariaLabel="Copropriété"
-                  options={TRISTATE_OPTIONS}
-                  value={booleanToTriState(data.is_coownership)}
-                  onChange={(v: TriState) => updateData({ is_coownership: triStateToBoolean(v) })}
-                />
-              </div>
+              {hasSurfaceRooms ? (
+                <div className="devis-reveal">
+                  <Label>Est-ce une copropriété ?</Label>
+                  <RadioRow
+                    ariaLabel="Copropriété"
+                    options={TRISTATE_OPTIONS}
+                    value={booleanToTriState(data.is_coownership)}
+                    onChange={(v: TriState) =>
+                      updateData({ is_coownership: triStateToBoolean(v) })
+                    }
+                  />
+                </div>
+              ) : null}
             </div>
           </Accordion>
+          </div>
 
           {/* ─────────── Accordéon 2 : Caractéristiques techniques ─────────── */}
+          {propDone ? (
+          <div className="devis-reveal">
           <Accordion
             step={2}
             open={open === "tech"}
@@ -307,9 +348,9 @@ export function FillingScreen({
             onToggle={() => toggle("tech")}
             title="Caractéristiques techniques"
           >
-            <div className="grid grid-cols-1 gap-4 pt-3 sm:grid-cols-2">
-              {branch === "rental" ? (
-                <div className="sm:col-span-2">
+            <div className="flex flex-col gap-4 pt-3">
+              {needsRentalFurnished ? (
+                <div className="devis-reveal">
                   <Label help="Impacte la Loi Boutin (location vide uniquement).">
                     Type de bail
                   </Label>
@@ -322,8 +363,8 @@ export function FillingScreen({
                 </div>
               ) : null}
 
-              {branch === "works" ? (
-                <div className="sm:col-span-2">
+              {needsWorksType ? (
+                <div className="devis-reveal">
                   <Label>Type de travaux</Label>
                   <Chips
                     ariaLabel="Type de travaux"
@@ -334,68 +375,82 @@ export function FillingScreen({
                 </div>
               ) : null}
 
-              <div className="sm:col-span-2">
-                <Label help="Cette date détermine les risques plomb et amiante.">
-                  Date du permis de construire
-                </Label>
-                <RadioRow
-                  ariaLabel="Date du permis de construire"
-                  options={PERMIT_UI_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
-                  value={permitStoreToUI(data.permit_date_range)}
-                  onChange={(v: PermitUIValue) =>
-                    updateData({ permit_date_range: permitUIToStore(v) })
-                  }
-                  columns={4}
-                />
-              </div>
+              {branchSpecDone ? (
+                <div className="devis-reveal">
+                  <Label help="Cette date détermine les risques plomb et amiante.">
+                    Date du permis de construire
+                  </Label>
+                  <RadioRow
+                    ariaLabel="Date du permis de construire"
+                    options={PERMIT_UI_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
+                    value={permitStoreToUI(data.permit_date_range)}
+                    onChange={(v: PermitUIValue) =>
+                      updateData({ permit_date_range: permitUIToStore(v) })
+                    }
+                    columns={4}
+                  />
+                </div>
+              ) : null}
 
-              <div className="sm:col-span-2">
-                <Label>Chauffage</Label>
-                <Chips
-                  ariaLabel="Type de chauffage"
-                  options={HEATING_OPTIONS}
-                  value={data.heating_type}
-                  onChange={(v) => updateData({ heating_type: v })}
-                />
-              </div>
+              {hasPermit ? (
+                <div className="devis-reveal">
+                  <Label>Chauffage</Label>
+                  <Chips
+                    ariaLabel="Type de chauffage"
+                    options={HEATING_OPTIONS}
+                    value={data.heating_type}
+                    onChange={(v) => updateData({ heating_type: v })}
+                  />
+                </div>
+              ) : null}
 
-              <div className="sm:col-span-2">
-                <Label>Installation gaz</Label>
-                <Chips
-                  ariaLabel="Installation gaz"
-                  options={GAS_INSTALLATION_OPTIONS}
-                  value={data.gas_installation}
-                  onChange={(v) => updateData({ gas_installation: v })}
-                />
-              </div>
+              {hasHeating ? (
+                <div className="devis-reveal">
+                  <Label>Installation gaz</Label>
+                  <Chips
+                    ariaLabel="Installation gaz"
+                    options={GAS_INSTALLATION_OPTIONS}
+                    value={data.gas_installation}
+                    onChange={(v) => updateData({ gas_installation: v })}
+                  />
+                </div>
+              ) : null}
 
-              <div>
-                <Label>Installation gaz +15 ans ?</Label>
-                <RadioRow
-                  ariaLabel="Installation gaz de plus de 15 ans"
-                  options={TRISTATE_COMPACT_OPTIONS}
-                  value={booleanToTriState(data.gas_over_15_years)}
-                  onChange={(v: TriState) =>
-                    updateData({ gas_over_15_years: triStateToBoolean(v) })
-                  }
-                />
-              </div>
+              {hasGasInstall ? (
+                <div className="devis-reveal">
+                  <Label>Installation gaz +15 ans ?</Label>
+                  <RadioRow
+                    ariaLabel="Installation gaz de plus de 15 ans"
+                    options={TRISTATE_COMPACT_OPTIONS}
+                    value={booleanToTriState(data.gas_over_15_years)}
+                    onChange={(v: TriState) =>
+                      updateData({ gas_over_15_years: triStateToBoolean(v) })
+                    }
+                  />
+                </div>
+              ) : null}
 
-              <div>
-                <Label>Installation élec +15 ans ?</Label>
-                <RadioRow
-                  ariaLabel="Installation électrique de plus de 15 ans"
-                  options={TRISTATE_COMPACT_OPTIONS}
-                  value={booleanToTriState(data.electric_over_15_years)}
-                  onChange={(v: TriState) =>
-                    updateData({ electric_over_15_years: triStateToBoolean(v) })
-                  }
-                />
-              </div>
+              {hasGasAge ? (
+                <div className="devis-reveal">
+                  <Label>Installation élec +15 ans ?</Label>
+                  <RadioRow
+                    ariaLabel="Installation électrique de plus de 15 ans"
+                    options={TRISTATE_COMPACT_OPTIONS}
+                    value={booleanToTriState(data.electric_over_15_years)}
+                    onChange={(v: TriState) =>
+                      updateData({ electric_over_15_years: triStateToBoolean(v) })
+                    }
+                  />
+                </div>
+              ) : null}
             </div>
           </Accordion>
+          </div>
+          ) : null}
 
           {/* ─────────── Accordéon 3 : Délai et notes ─────────── */}
+          {techDone ? (
+          <div className="devis-reveal">
           <Accordion
             step={3}
             open={open === "time"}
@@ -405,7 +460,7 @@ export function FillingScreen({
             summary={timeSummary}
           >
             <div className="flex flex-col gap-4 pt-3">
-              <div>
+              <div className="devis-reveal">
                 <Label>Dans quel délai ?</Label>
                 <RadioRow
                   ariaLabel="Urgence"
@@ -415,23 +470,29 @@ export function FillingScreen({
                   columns={5}
                 />
               </div>
-              <div>
-                <Label help="Facultatif — précisez un créneau, un contexte particulier…">
-                  Notes complémentaires
-                </Label>
-                <textarea
-                  value={data.notes ?? ""}
-                  onChange={(e) => updateData({ notes: e.target.value })}
-                  rows={3}
-                  maxLength={2000}
-                  placeholder="Un accès particulier, un créneau précis…"
-                  className="w-full rounded-[10px] border border-[var(--color-devis-line)] bg-white px-3.5 py-3 text-[15px] text-[var(--color-devis-ink)] outline-none focus:border-[var(--branch-fg)] focus-visible:ring-2 focus-visible:ring-[var(--branch-fg)]/30"
-                />
-              </div>
+              {timeDone ? (
+                <div className="devis-reveal">
+                  <Label help="Facultatif — précisez un créneau, un contexte particulier…">
+                    Notes complémentaires
+                  </Label>
+                  <textarea
+                    value={data.notes ?? ""}
+                    onChange={(e) => updateData({ notes: e.target.value })}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Un accès particulier, un créneau précis…"
+                    className="w-full rounded-[10px] border border-[var(--color-devis-line)] bg-white px-3.5 py-3 text-[15px] text-[var(--color-devis-ink)] outline-none focus:border-[var(--branch-fg)] focus-visible:ring-2 focus-visible:ring-[var(--branch-fg)]/30"
+                  />
+                </div>
+              ) : null}
             </div>
           </Accordion>
+          </div>
+          ) : null}
 
           {/* ─────────── Accordéon 4 : Votre email ─────────── */}
+          {timeDone ? (
+          <div className="devis-reveal">
           <Accordion
             step={4}
             open={open === "email"}
@@ -452,6 +513,8 @@ export function FillingScreen({
               />
             </div>
           </Accordion>
+          </div>
+          ) : null}
         </div>
 
         <button
@@ -471,6 +534,12 @@ export function FillingScreen({
           {submitting ? "Envoi en cours…" : "Continuer"}
           {!submitting ? <ArrowRightIcon className="h-4.5 w-4.5" aria-hidden /> : null}
         </button>
+
+        {!canContinue && !error ? (
+          <p className="mt-2 text-center font-mono text-[12px] text-[var(--color-devis-muted)]">
+            {completedCount} / 4 blocs complétés
+          </p>
+        ) : null}
 
         {error ? (
           <p className="mt-3 text-center text-[13px] text-amber-700" role="alert">

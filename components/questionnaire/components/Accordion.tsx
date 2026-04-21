@@ -36,8 +36,10 @@ export function Accordion({
   return (
     <div
       className={[
-        "overflow-hidden rounded-[14px] border border-[var(--color-devis-line)] bg-white",
-        open ? "shadow-[0_2px_0_rgba(0,0,0,0.02)]" : "",
+        "rounded-[14px] border border-[var(--color-devis-line)] bg-white",
+        // overflow-hidden ferme la carte proprement quand repliée ; visible
+        // quand ouverte pour laisser déborder les dropdowns (autocomplete).
+        open ? "overflow-visible shadow-[0_2px_0_rgba(0,0,0,0.02)]" : "overflow-hidden",
       ].join(" ")}
     >
       <button

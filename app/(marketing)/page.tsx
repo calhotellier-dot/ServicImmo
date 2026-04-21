@@ -1,6 +1,5 @@
 import { Actualites } from "@/components/marketing/Actualites";
 import { Audiences } from "@/components/marketing/Audiences";
-import { FinalCTA } from "@/components/marketing/FinalCTA";
 import { Hero } from "@/components/marketing/Hero";
 import { ServicesByCategory } from "@/components/marketing/ServicesByCategory";
 import { Specialties } from "@/components/marketing/Specialties";
@@ -25,7 +24,6 @@ export default function HomePage() {
       <Specialties />
       <Actualites />
       <Zones />
-      <FinalCTA />
     </>
   );
 }
