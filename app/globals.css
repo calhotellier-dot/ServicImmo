@@ -145,6 +145,59 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-fraunces);
+
+  /* ────────────────────────────────────────────────────────────────────
+     Home D3 — palette "classic" (Anis + Navy), handoff Claude Design.
+     Utilisée par components/marketing/*.
+     ──────────────────────────────────────────────────────────────────── */
+  --color-home-ink: #0f1e3a;
+  --color-home-slate: #1e3a5f;
+  --color-home-slate-2: #2a4f7a;
+  --color-home-saf: #a4c425;
+  --color-home-saf-soft: #e5efba;
+  --color-home-saf-dark: #6a8a10;
+  --color-home-saf-bg: #f3f7e0;
+  --color-home-bg: #f5f7f8;
+  --color-home-bg-2: #eef2f4;
+  --color-home-line: #dde4e8;
+  --color-home-line-soft: #e8edef;
+  --color-home-muted: #7a8691;
+  --color-home-muted-2: #4a5865;
+
+  /* ────────────────────────────────────────────────────────────────────
+     Devis V2 — palette "cream-lime-sage" (handoff Claude Design).
+     Utilisée par components/questionnaire/*.
+     ──────────────────────────────────────────────────────────────────── */
+  --color-devis-cream: #fcfaef;
+  --color-devis-ink: #1f2a14;
+  --color-devis-line: #dfe4c8;
+  --color-devis-muted: #606a50;
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   Branch colors (5 bifurcations du parcours devis) — déclarées en
+   `:root` plutôt qu'en `@theme` car elles ne sont consommées qu'à
+   travers l'indirection `var(--branch-*)` (injectée via getBranchVars).
+   Tailwind v4 n'émet les tokens `@theme inline` que s'ils sont référencés
+   par un utilitaire scanné — ce qui n'est pas le cas ici.
+   ──────────────────────────────────────────────────────────────────── */
+:root {
+  --color-branch-sale-bg: #eaf5c7;
+  --color-branch-sale-fg: #7a9b1c;
+  --color-branch-sale-dark: #546b10;
+  --color-branch-rental-bg: #d8e9d1;
+  --color-branch-rental-fg: #5a8256;
+  --color-branch-rental-dark: #365233;
+  --color-branch-works-bg: #f0d9bf;
+  --color-branch-works-fg: #b36a3a;
+  --color-branch-works-dark: #733e1c;
+  --color-branch-coownership-bg: #d4e8e6;
+  --color-branch-coownership-fg: #2a7570;
+  --color-branch-coownership-dark: #104a48;
+  --color-branch-other-bg: #e4e0cc;
+  --color-branch-other-fg: #6a6452;
+  --color-branch-other-dark: #3a3628;
 }
 
 @layer base {
@@ -153,5 +206,31 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Animations Home D3 (pin carte + dot "ouverture")
+   ─────────────────────────────────────────────────────────────────── */
+@keyframes home-ping {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px var(--color-home-saf-dark),
+      0 0 0 0 rgba(164, 196, 37, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--color-home-saf-dark),
+      0 0 0 12px rgba(164, 196, 37, 0);
+  }
+}
+@keyframes home-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
   }
 }

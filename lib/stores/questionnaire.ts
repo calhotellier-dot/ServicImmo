@@ -1,13 +1,17 @@
 /**
  * Store Zustand du questionnaire de devis.
  *
- * Responsabilités :
- * - Conserver l'étape courante (1-6)
- * - Conserver les réponses (`data`) incrémentalement
- * - Conserver l'id du `quote_requests` créé côté serveur (après l'étape 3)
- * - Persister dans localStorage pour permettre la reprise après abandon
+ * Pivot UX (handoff Claude Design V2-final) : le parcours n'est plus à 6 étapes
+ * linéaires mais sur 4 écrans (entry → filling → recap → thanks). Les données
+ * restent compatibles avec `FullQuoteInput` + `QuoteFormData` : seul le
+ * "chapitrage" de l'UI change. Le moteur de règles et le pricing sont intacts.
  *
- * Pattern directement inspiré de CLAUDE.md §Gestion d'état du questionnaire.
+ * Responsabilités :
+ * - Conserver l'écran courant
+ * - Conserver les réponses (`data`) incrémentalement
+ * - Conserver l'id du `quote_requests` créé côté serveur (après capture email)
+ * - Conserver le dernier calcul de diagnostics/prix (affiché au recap)
+ * - Persister dans localStorage pour permettre la reprise après abandon
  */
 
 "use client";
@@ -17,62 +21,49 @@ import { persist } from "zustand/middleware";
 
 import type { FullQuoteInput } from "@/lib/validation/schemas";
 
+export type QuestionnaireScreen = "entry" | "filling" | "recap" | "thanks";
+
 export type QuestionnaireData = Partial<FullQuoteInput>;
 
+type LastCalculation = {
+  required: unknown[];
+  toClarify: unknown[];
+  estimate: { min: number; max: number; appliedModulators: string[] };
+} | null;
+
 type QuestionnaireState = {
-  currentStep: number;
+  currentScreen: QuestionnaireScreen;
   data: QuestionnaireData;
   quoteRequestId: string | null;
   /** Indique si la soumission finale a déjà été effectuée avec succès. */
   submitted: boolean;
-  /** Stocke le dernier calcul de diagnostics/prix (affiché en étape 6). */
-  lastCalculation: {
-    required: unknown[];
-    toClarify: unknown[];
-    estimate: { min: number; max: number; appliedModulators: string[] };
-  } | null;
+  lastCalculation: LastCalculation;
 
-  setStep: (step: number) => void;
-  goNext: () => void;
-  goPrev: () => void;
+  goToScreen: (screen: QuestionnaireScreen) => void;
   updateData: (patch: QuestionnaireData) => void;
   setQuoteRequestId: (id: string) => void;
-  setLastCalculation: (calc: QuestionnaireState["lastCalculation"]) => void;
+  setLastCalculation: (calc: LastCalculation) => void;
   markSubmitted: () => void;
   reset: () => void;
 };
 
-const TOTAL_STEPS = 6;
-const MIN_STEP = 1;
-
 export const useQuestionnaireStore = create<QuestionnaireState>()(
   persist(
     (set) => ({
-      currentStep: 1,
+      currentScreen: "entry",
       data: {},
       quoteRequestId: null,
       submitted: false,
       lastCalculation: null,
 
-      setStep: (step) =>
-        set({
-          currentStep: Math.min(Math.max(step, MIN_STEP), TOTAL_STEPS),
-        }),
-      goNext: () =>
-        set((state) => ({
-          currentStep: Math.min(state.currentStep + 1, TOTAL_STEPS),
-        })),
-      goPrev: () =>
-        set((state) => ({
-          currentStep: Math.max(state.currentStep - 1, MIN_STEP),
-        })),
+      goToScreen: (screen) => set({ currentScreen: screen }),
       updateData: (patch) => set((state) => ({ data: { ...state.data, ...patch } })),
       setQuoteRequestId: (id) => set({ quoteRequestId: id }),
       setLastCalculation: (calc) => set({ lastCalculation: calc }),
       markSubmitted: () => set({ submitted: true }),
       reset: () =>
         set({
-          currentStep: 1,
+          currentScreen: "entry",
           data: {},
           quoteRequestId: null,
           submitted: false,
@@ -81,17 +72,33 @@ export const useQuestionnaireStore = create<QuestionnaireState>()(
     }),
     {
       name: "servicimmo-quote",
-      version: 1,
-      // On ne persiste pas `lastCalculation` (recalculable) pour éviter des
-      // incohérences en cas de changement des règles entre deux sessions.
+      // v2 = pivot UX vers 4 écrans. Invalide les stores v1 (6 étapes) pour
+      // éviter qu'un ancien `currentStep` numérique casse l'hydratation.
+      version: 2,
       partialize: (state) => ({
-        currentStep: state.currentStep,
+        currentScreen: state.currentScreen,
         data: state.data,
         quoteRequestId: state.quoteRequestId,
         submitted: state.submitted,
       }),
+      migrate: (persistedState, fromVersion) => {
+        // Toute version antérieure perd son état : la forme a trop changé pour
+        // qu'une migration automatique ait du sens. On remet à zéro proprement.
+        if (fromVersion < 2) {
+          return {
+            currentScreen: "entry",
+            data: {},
+            quoteRequestId: null,
+            submitted: false,
+          };
+        }
+        return persistedState as {
+          currentScreen: QuestionnaireScreen;
+          data: QuestionnaireData;
+          quoteRequestId: string | null;
+          submitted: boolean;
+        };
+      },
     }
   )
 );
-
-export const QUESTIONNAIRE_TOTAL_STEPS = TOTAL_STEPS;

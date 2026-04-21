@@ -1,12 +1,12 @@
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/marketing/Footer";
+import { Header } from "@/components/marketing/Header";
 
 /**
  * Layout des pages marketing : accueil, services, actualités, zones,
- * mentions légales, CGV, contact. Inclut Header (sticky) + Footer.
+ * mentions légales, CGV, contact. Inclut Header (sticky) + Footer D3.
  *
- * Note : le questionnaire (`app/(public)/devis`) n'utilise PAS ce layout —
- * il a son propre shell focus-friendly (cf. `QuestionnaireLayout.tsx`).
+ * Le questionnaire (`app/(public)/devis`) n'utilise PAS ce layout — il a son
+ * propre shell focus-friendly (QuestionnaireApp).
  */
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
