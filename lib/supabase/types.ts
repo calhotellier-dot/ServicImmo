@@ -365,6 +365,136 @@ export type DocumentDossierRow = {
   notes: string | null;
 };
 
+// ── Sprint 4 (migration 0007) ─────────────────────────────────────────────
+
+export type DevisStatus =
+  | "brouillon"
+  | "envoye"
+  | "accepte"
+  | "refuse"
+  | "expire"
+  | "annule";
+
+export type FactureStatus =
+  | "emise"
+  | "payee_partiel"
+  | "payee"
+  | "en_relance"
+  | "litige"
+  | "annule";
+
+export type InvoiceType = "facture" | "avoir";
+
+export type MajorationRuleType =
+  | "TRAVEL_FEE"
+  | "AREA_ABOVE_HAB"
+  | "URGENT_DELAY"
+  | "COLLECTIVE_HEATING"
+  | "CUSTOM";
+
+export type DevisRow = {
+  id: string;
+  organization_id: string;
+  dossier_id: string | null;
+  created_at: string;
+  updated_at: string;
+  reference: string | null;
+  status: DevisStatus;
+  client_id: string | null;
+  client_snapshot: Json | null;
+  subtotal_ht: number;
+  vat_rate: number;
+  vat_amount: number;
+  total_ttc: number;
+  applied_modulators: Json | null;
+  accept_token: string | null;
+  accept_token_expires_at: string | null;
+  accepted_at: string | null;
+  refused_at: string | null;
+  refusal_reason: string | null;
+  pdf_storage_path: string | null;
+  valid_until: string | null;
+  notes: string | null;
+  commentary: string | null;
+  sent_at: string | null;
+  sent_to_email: string | null;
+};
+
+export type DevisLigneRow = {
+  id: string;
+  devis_id: string;
+  order_index: number;
+  diagnostic_type_id: number | null;
+  label: string;
+  description: string | null;
+  quantity: number;
+  unit_price: number;
+  line_total: number;
+};
+
+export type FactureRow = {
+  id: string;
+  organization_id: string;
+  dossier_id: string | null;
+  devis_id: string | null;
+  created_at: string;
+  updated_at: string;
+  reference: string | null;
+  invoice_type: InvoiceType;
+  status: FactureStatus;
+  client_id: string | null;
+  client_snapshot: Json | null;
+  subtotal_ht: number;
+  vat_rate: number;
+  vat_amount: number;
+  total_ttc: number;
+  amount_paid: number;
+  issued_at: string;
+  due_at: string | null;
+  pdf_storage_path: string | null;
+  credit_of_invoice_id: string | null;
+  sent_at: string | null;
+  sent_to_email: string | null;
+  notes: string | null;
+  commentary: string | null;
+};
+
+export type FactureLigneRow = {
+  id: string;
+  facture_id: string;
+  order_index: number;
+  diagnostic_type_id: number | null;
+  label: string;
+  description: string | null;
+  quantity: number;
+  unit_price: number;
+  line_total: number;
+};
+
+export type GrilleTarifaireRow = {
+  id: number;
+  organization_id: string;
+  diagnostic_type_id: number;
+  context: string;
+  price_min: number;
+  price_max: number;
+  is_active: boolean;
+  updated_at: string;
+};
+
+export type RegleMajorationRow = {
+  id: number;
+  organization_id: string;
+  rule_type: MajorationRuleType;
+  label: string;
+  criteria: Json;
+  amount_flat: number | null;
+  amount_percent: number | null;
+  is_active: boolean;
+  order_index: number;
+  created_at: string;
+};
+
 export type DossierDiagnosticRow = {
   id: string;
   dossier_id: string;
@@ -666,6 +796,73 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<Omit<DocumentDossierRow, "id" | "created_at" | "dossier_id">>;
+        Relationships: [];
+      };
+      devis: {
+        Row: DevisRow;
+        Insert: Partial<Omit<DevisRow, "id" | "created_at" | "updated_at">> & {
+          organization_id: string;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<DevisRow, "id" | "created_at" | "organization_id">>;
+        Relationships: [];
+      };
+      devis_lignes: {
+        Row: DevisLigneRow;
+        Insert: Partial<Omit<DevisLigneRow, "id">> & {
+          devis_id: string;
+          label: string;
+          id?: string;
+        };
+        Update: Partial<Omit<DevisLigneRow, "id" | "devis_id">>;
+        Relationships: [];
+      };
+      factures: {
+        Row: FactureRow;
+        Insert: Partial<Omit<FactureRow, "id" | "created_at" | "updated_at">> & {
+          organization_id: string;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<FactureRow, "id" | "created_at" | "organization_id">>;
+        Relationships: [];
+      };
+      facture_lignes: {
+        Row: FactureLigneRow;
+        Insert: Partial<Omit<FactureLigneRow, "id">> & {
+          facture_id: string;
+          label: string;
+          id?: string;
+        };
+        Update: Partial<Omit<FactureLigneRow, "id" | "facture_id">>;
+        Relationships: [];
+      };
+      grille_tarifaire: {
+        Row: GrilleTarifaireRow;
+        Insert: Partial<Omit<GrilleTarifaireRow, "id" | "updated_at">> & {
+          organization_id: string;
+          diagnostic_type_id: number;
+          price_min: number;
+          price_max: number;
+          id?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<GrilleTarifaireRow, "id">>;
+        Relationships: [];
+      };
+      regles_majoration: {
+        Row: RegleMajorationRow;
+        Insert: Partial<Omit<RegleMajorationRow, "id" | "created_at">> & {
+          organization_id: string;
+          rule_type: MajorationRuleType;
+          label: string;
+          id?: number;
+          created_at?: string;
+        };
+        Update: Partial<Omit<RegleMajorationRow, "id">>;
         Relationships: [];
       };
     };
