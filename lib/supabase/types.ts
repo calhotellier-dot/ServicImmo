@@ -245,6 +245,94 @@ export type DiagnosticTypeRow = {
   order_index: number;
 };
 
+// ── Sprint 2 (migration 0005) ─────────────────────────────────────────────
+
+export type DossierStatus =
+  | "brouillon"
+  | "a_planifier"
+  | "planifie"
+  | "en_cours"
+  | "realise"
+  | "en_facturation"
+  | "facture"
+  | "paye"
+  | "archive"
+  | "annule";
+
+export type DossierDiagnosticStatus = "a_realiser" | "realise" | "annule";
+
+export type DossierRow = {
+  id: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  reference: string | null;
+  status: DossierStatus;
+  project_type: ProjectType | null;
+  property_type: string | null;
+  address: string | null;
+  address_line2: string | null;
+  postal_code: string | null;
+  city: string | null;
+  surface: number | null;
+  rooms_count: number | null;
+  is_coownership: boolean | null;
+  permit_date_range: PermitDateRange | null;
+  heating_type: string | null;
+  heating_mode: HeatingMode | null;
+  ecs_type: string | null;
+  gas_installation: string | null;
+  gas_over_15_years: boolean | null;
+  electric_over_15_years: boolean | null;
+  rental_furnished: RentalFurnished | null;
+  works_type: WorksType | null;
+  residence_name: string | null;
+  floor: number | null;
+  is_top_floor: boolean | null;
+  door_number: string | null;
+  is_duplex: boolean | null;
+  dependencies: string[] | null;
+  dependencies_converted: boolean | null;
+  cadastral_reference: string | null;
+  purchase_date: string | null;
+  cooktop_connection: CooktopConnection | null;
+  commercial_activity: string | null;
+  heated_zones_count: number | null;
+  configuration_notes: string | null;
+  tenants_in_place: boolean | null;
+  access_notes: string | null;
+  syndic_contact: string | null;
+  proprietaire_id: string | null;
+  prescripteur_id: string | null;
+  technicien_id: string | null;
+  existing_valid_diagnostics: string[] | null;
+  existing_diagnostics_files: Json;
+  required_diagnostics: Json | null;
+  diagnostics_to_clarify: Json | null;
+  price_min: number | null;
+  price_max: number | null;
+  applied_modulators: Json | null;
+  urgency: string | null;
+  notes: string | null;
+  requested_date: string | null;
+  completion_rate: number;
+  tags: string[] | null;
+  source_quote_request_id: string | null;
+};
+
+export type DossierDiagnosticRow = {
+  id: string;
+  dossier_id: string;
+  diagnostic_type_id: number;
+  status: DossierDiagnosticStatus;
+  report_url: string | null;
+  completed_at: string | null;
+  price_override: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ServiceRow = {
   id: number;
   slug: string;
@@ -483,6 +571,29 @@ export type Database = {
           id?: number;
         };
         Update: Partial<Omit<DiagnosticTypeRow, "id">>;
+        Relationships: [];
+      };
+      dossiers: {
+        Row: DossierRow;
+        Insert: Partial<Omit<DossierRow, "id" | "created_at" | "updated_at">> & {
+          organization_id: string;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<DossierRow, "id" | "created_at" | "organization_id">>;
+        Relationships: [];
+      };
+      dossier_diagnostics: {
+        Row: DossierDiagnosticRow;
+        Insert: Partial<Omit<DossierDiagnosticRow, "id" | "created_at" | "updated_at">> & {
+          dossier_id: string;
+          diagnostic_type_id: number;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<DossierDiagnosticRow, "id" | "created_at">>;
         Relationships: [];
       };
     };
