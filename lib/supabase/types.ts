@@ -387,6 +387,67 @@ export type InvoiceType = "facture" | "avoir";
 
 export type PaiementMethodRow = "stripe" | "virement" | "cheque" | "especes";
 
+// ── Sprint 6 (migration 0009) ─────────────────────────────────────────────
+
+export type DemandeStatus =
+  | "brouillon"
+  | "envoye"
+  | "en_cours"
+  | "complete"
+  | "expire"
+  | "annule";
+
+export type DemandeItemType = "document" | "question" | "signature";
+export type DemandeItemStatus = "pending" | "completed" | "skipped";
+
+export type ModeleDemandeRow = {
+  id: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  description: string | null;
+  items: Json;
+  is_active: boolean;
+};
+
+export type DemandeDocumentsRow = {
+  id: string;
+  organization_id: string;
+  dossier_id: string | null;
+  created_at: string;
+  updated_at: string;
+  reference: string | null;
+  status: DemandeStatus;
+  recipient_contact_id: string | null;
+  recipient_email: string | null;
+  recipient_name: string | null;
+  access_token: string | null;
+  access_token_expires_at: string | null;
+  message: string | null;
+  sent_at: string | null;
+  completed_at: string | null;
+  due_date: string | null;
+};
+
+export type DemandeItemRow = {
+  id: string;
+  demande_id: string;
+  order_index: number;
+  item_type: DemandeItemType;
+  label: string;
+  description: string | null;
+  required: boolean;
+  status: DemandeItemStatus;
+  file_storage_path: string | null;
+  file_name: string | null;
+  file_size_bytes: number | null;
+  file_mime: string | null;
+  answer_text: string | null;
+  signature_data: string | null;
+  answered_at: string | null;
+};
+
 export type PaiementRow = {
   id: string;
   organization_id: string;
@@ -893,6 +954,40 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<Omit<PaiementRow, "id" | "created_at" | "organization_id">>;
+        Relationships: [];
+      };
+      modeles_demande: {
+        Row: ModeleDemandeRow;
+        Insert: Partial<Omit<ModeleDemandeRow, "id" | "created_at" | "updated_at">> & {
+          organization_id: string;
+          name: string;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<ModeleDemandeRow, "id" | "created_at" | "organization_id">>;
+        Relationships: [];
+      };
+      demandes_documents: {
+        Row: DemandeDocumentsRow;
+        Insert: Partial<Omit<DemandeDocumentsRow, "id" | "created_at" | "updated_at">> & {
+          organization_id: string;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<DemandeDocumentsRow, "id" | "created_at" | "organization_id">>;
+        Relationships: [];
+      };
+      demande_items: {
+        Row: DemandeItemRow;
+        Insert: Partial<Omit<DemandeItemRow, "id">> & {
+          demande_id: string;
+          item_type: DemandeItemType;
+          label: string;
+          id?: string;
+        };
+        Update: Partial<Omit<DemandeItemRow, "id" | "demande_id">>;
         Relationships: [];
       };
     };
