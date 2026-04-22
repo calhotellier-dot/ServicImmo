@@ -162,6 +162,89 @@ export type PricingRuleRow = {
   updated_at: string;
 };
 
+// ── Sprint 1 (migrations 0003 / 0004) ─────────────────────────────────────
+
+export type UserRole = "admin" | "diagnostiqueur" | "assistant";
+export type ContactRowType = "particulier" | "agence" | "notaire" | "syndic" | "autre";
+export type DiagnosticCategory =
+  | "logement"
+  | "tertiaire"
+  | "travaux"
+  | "copropriete"
+  | "mesurage"
+  | "etat";
+
+export type OrganizationRow = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  slug: string;
+  name: string;
+  siret: string | null;
+  iban: string | null;
+  tva_intra: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  postal_code: string | null;
+  city: string | null;
+  country: string;
+  phone: string | null;
+  email: string | null;
+  logo_url: string | null;
+  settings: Json;
+};
+
+export type UserProfileRow = {
+  id: string; // = auth.users.id
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  first_name: string | null;
+  last_name: string | null;
+  role: UserRole;
+  phone: string | null;
+  avatar_url: string | null;
+  is_active: boolean;
+};
+
+export type ContactRow = {
+  id: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  type: ContactRowType;
+  civility: Civility | null;
+  first_name: string | null;
+  last_name: string | null;
+  company_name: string | null;
+  siret: string | null;
+  email: string | null;
+  phone: string | null;
+  phone_alt: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  postal_code: string | null;
+  city: string | null;
+  country: string | null;
+  pappers_data: Json | null;
+  pappers_enriched_at: string | null;
+  notes: string | null;
+  tags: string[] | null;
+  archived_at: string | null;
+};
+
+export type DiagnosticTypeRow = {
+  id: number;
+  slug: string;
+  name: string;
+  short_name: string | null;
+  category: DiagnosticCategory;
+  description: string | null;
+  validity_months: number | null;
+  is_active: boolean;
+  order_index: number;
+};
+
 export type ServiceRow = {
   id: number;
   slug: string;
@@ -241,6 +324,11 @@ export type ActionLogRow = {
  */
 
 export type Database = {
+  // Requis par @supabase/supabase-js >= 2.60 (postgrest v12).
+  // Sans ce champ, le type générique tombe sur `never` pour toutes les tables.
+  __InternalSupabase: {
+    PostgrestVersion: "12";
+  };
   public: {
     Tables: {
       quote_requests: {
@@ -310,6 +398,91 @@ export type Database = {
           updated_at?: string;
         };
         Update: Partial<Omit<PricingRuleRow, "id">>;
+        Relationships: [];
+      };
+      organizations: {
+        Row: OrganizationRow;
+        Insert: Partial<Omit<OrganizationRow, "id" | "created_at" | "updated_at">> & {
+          name: string;
+          slug: string;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<OrganizationRow, "id" | "created_at">>;
+        Relationships: [];
+      };
+      users_profiles: {
+        Row: UserProfileRow;
+        Insert: Partial<Omit<UserProfileRow, "created_at" | "updated_at">> & {
+          id: string;
+          organization_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<UserProfileRow, "id" | "created_at">>;
+        Relationships: [];
+      };
+      contacts: {
+        Row: ContactRow;
+        Insert: {
+          id?: string;
+          organization_id: string;
+          type: ContactRowType;
+          civility?: Civility | null;
+          first_name?: string | null;
+          last_name?: string | null;
+          company_name?: string | null;
+          siret?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          phone_alt?: string | null;
+          address_line1?: string | null;
+          address_line2?: string | null;
+          postal_code?: string | null;
+          city?: string | null;
+          country?: string | null;
+          pappers_data?: Json | null;
+          pappers_enriched_at?: string | null;
+          notes?: string | null;
+          tags?: string[] | null;
+          archived_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          type?: ContactRowType;
+          civility?: Civility | null;
+          first_name?: string | null;
+          last_name?: string | null;
+          company_name?: string | null;
+          siret?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          phone_alt?: string | null;
+          address_line1?: string | null;
+          address_line2?: string | null;
+          postal_code?: string | null;
+          city?: string | null;
+          country?: string | null;
+          pappers_data?: Json | null;
+          pappers_enriched_at?: string | null;
+          notes?: string | null;
+          tags?: string[] | null;
+          archived_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      diagnostic_types: {
+        Row: DiagnosticTypeRow;
+        Insert: Partial<Omit<DiagnosticTypeRow, "id">> & {
+          slug: string;
+          name: string;
+          category: DiagnosticCategory;
+          id?: number;
+        };
+        Update: Partial<Omit<DiagnosticTypeRow, "id">>;
         Relationships: [];
       };
     };
