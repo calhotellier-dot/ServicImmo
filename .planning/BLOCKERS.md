@@ -11,6 +11,13 @@ avant mise en prod. À lire à la toute fin, après le Sprint 8.
 
 ## Liste (remplie au fil des sprints)
 
+### Sprint 2 — Dossiers + wizard + Kanban
+
+- 🔴 **Appliquer migration 0005** (dossiers + dossier_diagnostics + fonction `generate_dossier_reference`).
+- 🟠 **DnD Kanban interactif** : version Sprint 2 est statique (colonnes SSR). Réintégrer `@dnd-kit` en Client Component pour drag & drop des cartes (Sprint 2.1 ou fin Sprint 2 en polish). Backend `updateDossierStatus` déjà prêt.
+- 🟡 **Autocompletion adresse BAN** dans le wizard : non câblée (existe sur le questionnaire public, à porter).
+- 🟡 **Step-by-step linéaire** (10 étapes PRD) : pour l'instant un formulaire à sections. À arbitrer avec Servicimmo en Sprint 8 selon feedback power-users.
+
 ### Sprint 1 — DB + auth + contacts
 
 - 🔴 **Provisionner projets Supabase** `servicimmo-dev` + `servicimmo-prod` sur supabase.com, remplir `.env.local` avec URL + anon_key + service_role.
