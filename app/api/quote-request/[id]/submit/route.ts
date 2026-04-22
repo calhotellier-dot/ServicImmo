@@ -22,8 +22,9 @@ import {
   serverError,
 } from "@/lib/api/responses";
 import { calculateRequiredDiagnostics } from "@/lib/diagnostics/rules";
-import { estimatePrice } from "@/lib/diagnostics/pricing";
+import { estimatePriceWithGrid, loadPricingGrid } from "@/lib/diagnostics/pricing";
 import type { QuoteFormData } from "@/lib/diagnostics/types";
+import { distanceFromToursKm } from "@/lib/geo/distance";
 import { getSupabaseServiceClient } from "@/lib/supabase/server";
 import { fullQuoteSchema } from "@/lib/validation/schemas";
 
@@ -52,64 +53,103 @@ export async function POST(
   if (!parsed.success) return fromZodError(parsed.error);
 
   // --- Calculs ------------------------------------------------------------
+  const d = parsed.data;
   const formData: QuoteFormData = {
-    project_type: parsed.data.project_type,
-    property_type: parsed.data.property_type,
-    postal_code: parsed.data.postal_code,
-    surface: parsed.data.surface,
-    rooms_count: parsed.data.rooms_count,
-    is_coownership: parsed.data.is_coownership,
-    permit_date_range: parsed.data.permit_date_range,
-    heating_type: parsed.data.heating_type,
-    gas_installation: parsed.data.gas_installation,
-    gas_over_15_years: parsed.data.gas_over_15_years,
-    electric_over_15_years: parsed.data.electric_over_15_years,
-    rental_furnished: parsed.data.rental_furnished,
-    works_type: parsed.data.works_type,
+    project_type: d.project_type,
+    property_type: d.property_type,
+    postal_code: d.postal_code,
+    surface: d.surface,
+    rooms_count: d.rooms_count,
+    is_coownership: d.is_coownership,
+    permit_date_range: d.permit_date_range,
+    heating_type: d.heating_type,
+    gas_installation: d.gas_installation,
+    gas_over_15_years: d.gas_over_15_years,
+    electric_over_15_years: d.electric_over_15_years,
+    rental_furnished: d.rental_furnished,
+    works_type: d.works_type,
+    heating_mode: d.heating_mode,
+    ecs_type: d.ecs_type,
+    dependencies: d.dependencies,
+    dependencies_converted: d.dependencies_converted,
+    existing_valid_diagnostics: d.existing_valid_diagnostics,
+    existing_diagnostics_files: d.existing_diagnostics_files,
+    tenants_in_place: d.tenants_in_place,
+    is_duplex: d.is_duplex,
+    is_top_floor: d.is_top_floor,
   };
 
   const diagnostics = calculateRequiredDiagnostics(formData);
-  const estimate = estimatePrice(diagnostics.required, {
-    surface: parsed.data.surface,
-    postal_code: parsed.data.postal_code,
-    property_type: parsed.data.property_type,
-    urgency: parsed.data.urgency,
+  const grid = await loadPricingGrid();
+  const distance_km = distanceFromToursKm(d.postal_code) ?? undefined;
+  const estimate = estimatePriceWithGrid(grid, diagnostics.required, {
+    surface: d.surface,
+    postal_code: d.postal_code,
+    property_type: d.property_type,
+    urgency: d.urgency,
+    heating_mode: d.heating_mode,
+    distance_km,
   });
 
   // --- Persist ------------------------------------------------------------
   const nowIso = new Date().toISOString();
   const updatePayload = {
     status: "submitted" as const,
-    // Étape 2 (on réécrit pour couvrir les cas où le draft n'existait pas vraiment)
-    project_type: parsed.data.project_type,
-    property_type: parsed.data.property_type,
-    address: parsed.data.address,
-    postal_code: parsed.data.postal_code,
-    city: parsed.data.city,
-    surface: parsed.data.surface,
-    rooms_count: parsed.data.rooms_count,
-    is_coownership: parsed.data.is_coownership,
+    // Étape 2
+    project_type: d.project_type,
+    property_type: d.property_type,
+    address: d.address,
+    postal_code: d.postal_code,
+    city: d.city,
+    surface: d.surface,
+    rooms_count: d.rooms_count,
+    is_coownership: d.is_coownership,
     // Étape 3
-    email: parsed.data.email,
+    email: d.email,
     // Étape 4
-    permit_date_range: parsed.data.permit_date_range,
-    heating_type: parsed.data.heating_type,
-    gas_installation: parsed.data.gas_installation,
-    gas_over_15_years: parsed.data.gas_over_15_years,
-    electric_over_15_years: parsed.data.electric_over_15_years,
-    rental_furnished: parsed.data.rental_furnished ?? null,
-    works_type: parsed.data.works_type ?? null,
+    permit_date_range: d.permit_date_range,
+    heating_type: d.heating_type,
+    gas_installation: d.gas_installation,
+    gas_over_15_years: d.gas_over_15_years,
+    electric_over_15_years: d.electric_over_15_years,
+    rental_furnished: d.rental_furnished ?? null,
+    works_type: d.works_type ?? null,
     // Étape 5
-    urgency: parsed.data.urgency,
-    notes: parsed.data.notes ?? null,
+    urgency: d.urgency,
+    notes: d.notes ?? null,
     // Étape 6
-    civility: parsed.data.civility,
-    first_name: parsed.data.first_name,
-    last_name: parsed.data.last_name,
-    phone: parsed.data.phone ?? null,
+    civility: d.civility,
+    first_name: d.first_name,
+    last_name: d.last_name,
+    phone: d.phone,
     // Consentement
-    consent_rgpd: parsed.data.consent_rgpd,
+    consent_rgpd: d.consent_rgpd,
     consent_at: nowIso,
+    // V2 — rappel téléphone
+    heating_mode: d.heating_mode ?? null,
+    ecs_type: d.ecs_type ?? null,
+    syndic_contact: d.syndic_contact ?? null,
+    dependencies: d.dependencies ?? null,
+    dependencies_converted: d.dependencies_converted ?? null,
+    existing_valid_diagnostics: d.existing_valid_diagnostics ?? null,
+    existing_diagnostics_files: d.existing_diagnostics_files ?? [],
+    tenants_in_place: d.tenants_in_place ?? null,
+    access_notes: d.access_notes ?? null,
+    referral_source: d.referral_source ?? null,
+    referral_other: d.referral_other ?? null,
+    residence_name: d.residence_name ?? null,
+    floor: d.floor ?? null,
+    is_top_floor: d.is_top_floor ?? null,
+    door_number: d.door_number ?? null,
+    is_duplex: d.is_duplex ?? null,
+    purchase_date: d.purchase_date ?? null,
+    cooktop_connection: d.cooktop_connection ?? null,
+    cadastral_reference: d.cadastral_reference ?? null,
+    commercial_activity: d.commercial_activity ?? null,
+    heated_zones_count: d.heated_zones_count ?? null,
+    configuration_notes: d.configuration_notes ?? null,
+    preferred_payment_method: d.preferred_payment_method ?? null,
+    distance_km: distance_km ?? null,
     // Résultat calculé
     required_diagnostics: diagnostics.required,
     diagnostics_to_clarify: diagnostics.toClarify,

@@ -15,8 +15,9 @@ import { NextResponse } from "next/server";
 
 import { badRequest, fromZodError, ok, serverError } from "@/lib/api/responses";
 import { calculateRequiredDiagnostics } from "@/lib/diagnostics/rules";
-import { estimatePrice } from "@/lib/diagnostics/pricing";
+import { estimatePriceWithGrid, loadPricingGrid } from "@/lib/diagnostics/pricing";
 import type { DiagnosticsResult, PriceEstimate, QuoteFormData } from "@/lib/diagnostics/types";
+import { distanceFromToursKm } from "@/lib/geo/distance";
 import { calculatePayloadSchema, type CalculatePayload } from "@/lib/validation/schemas";
 
 type CalculateResponse = DiagnosticsResult & { estimate: PriceEstimate };
@@ -35,7 +36,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
-    const result = computeCalculation(parsed.data);
+    const result = await computeCalculation(parsed.data);
     return ok<CalculateResponse>(result);
   } catch (err) {
     console.error("[/api/calculate] erreur inattendue", err);
@@ -47,8 +48,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 // Pure computation (testable indépendamment)
 // ---------------------------------------------------------------------------
 
-function computeCalculation(payload: CalculatePayload): CalculateResponse {
+async function computeCalculation(payload: CalculatePayload): Promise<CalculateResponse> {
   // On re-construit un QuoteFormData minimal suffisant pour les moteurs.
+  // Les champs V2 (heating_mode, dependencies, existing_valid_diagnostics…)
+  // sont ajoutés si présents dans le payload (schema élargi plus loin).
+  const extra = payload as Partial<QuoteFormData>;
   const formData: QuoteFormData = {
     project_type: payload.project_type,
     property_type: payload.property_type,
@@ -63,15 +67,29 @@ function computeCalculation(payload: CalculatePayload): CalculateResponse {
     electric_over_15_years: payload.electric_over_15_years,
     rental_furnished: payload.rental_furnished,
     works_type: payload.works_type,
+    heating_mode: extra.heating_mode,
+    ecs_type: extra.ecs_type,
+    dependencies: extra.dependencies,
+    dependencies_converted: extra.dependencies_converted,
+    existing_valid_diagnostics: extra.existing_valid_diagnostics,
+    existing_diagnostics_files: extra.existing_diagnostics_files,
+    tenants_in_place: extra.tenants_in_place,
+    is_duplex: extra.is_duplex,
+    is_top_floor: extra.is_top_floor,
   };
 
   const diagnostics = calculateRequiredDiagnostics(formData);
+  const grid = await loadPricingGrid();
 
-  const estimate = estimatePrice(diagnostics.required, {
+  const distance_km = distanceFromToursKm(payload.postal_code) ?? undefined;
+
+  const estimate = estimatePriceWithGrid(grid, diagnostics.required, {
     surface: payload.surface,
     postal_code: payload.postal_code,
     property_type: payload.property_type,
     urgency: payload.urgency ?? null,
+    heating_mode: extra.heating_mode,
+    distance_km,
   });
 
   return { ...diagnostics, estimate };

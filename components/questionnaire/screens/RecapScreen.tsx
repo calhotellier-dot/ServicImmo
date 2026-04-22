@@ -31,6 +31,13 @@ const CIVILITY_OPTIONS = [
   { value: "other", label: "Autre" },
 ] as const;
 
+const PAYMENT_METHOD_OPTIONS = [
+  { value: "cb", label: "Carte bancaire" },
+  { value: "chq", label: "Chèque" },
+  { value: "esp", label: "Espèces" },
+  { value: "virt", label: "Virement" },
+] as const;
+
 type RecapScreenProps = {
   branch: ProjectType;
   onSubmitted: () => void;
@@ -76,6 +83,26 @@ function toCalculatePayload(d: QuestionnaireData): CalculatePayload | null {
     rental_furnished: d.rental_furnished,
     works_type: d.works_type,
     urgency: d.urgency,
+    // V2 — influe sur diagnostics et pricing
+    heating_mode: d.heating_mode,
+    ecs_type: d.ecs_type,
+    syndic_contact: d.syndic_contact,
+    cooktop_connection: d.cooktop_connection,
+    dependencies: d.dependencies,
+    dependencies_converted: d.dependencies_converted,
+    existing_valid_diagnostics: d.existing_valid_diagnostics,
+    existing_diagnostics_files: d.existing_diagnostics_files,
+    tenants_in_place: d.tenants_in_place,
+    residence_name: d.residence_name,
+    floor: d.floor,
+    is_top_floor: d.is_top_floor,
+    door_number: d.door_number,
+    is_duplex: d.is_duplex,
+    purchase_date: d.purchase_date,
+    cadastral_reference: d.cadastral_reference,
+    commercial_activity: d.commercial_activity,
+    heated_zones_count: d.heated_zones_count,
+    configuration_notes: d.configuration_notes,
   };
 }
 
@@ -171,6 +198,12 @@ export function RecapScreen({ branch, onSubmitted }: RecapScreenProps) {
       !data.consent_rgpd
     ) {
       setSubmitError("Complétez votre civilité, prénom, nom et le consentement RGPD.");
+      return;
+    }
+    // Téléphone désormais obligatoire (V2 — automatisation du rappel ops).
+    const phoneDigits = (data.phone ?? "").replace(/\D/g, "");
+    if (phoneDigits.length < 8) {
+      setSubmitError("Un numéro de téléphone est requis pour la prise de rendez-vous.");
       return;
     }
 
@@ -351,7 +384,9 @@ export function RecapScreen({ branch, onSubmitted }: RecapScreenProps) {
                     </div>
                   </div>
                   <div>
-                    <Label help="Recommandé pour accélérer la prise de RDV.">Téléphone</Label>
+                    <Label help="Déjà renseigné à l'étape précédente — modifiable si besoin.">
+                      Téléphone
+                    </Label>
                     <Field
                       type="tel"
                       autoComplete="tel"
@@ -359,6 +394,20 @@ export function RecapScreen({ branch, onSubmitted }: RecapScreenProps) {
                       onChange={(e) => updateData({ phone: e.target.value })}
                       placeholder="06 12 34 56 78"
                       aria-label="Téléphone"
+                    />
+                  </div>
+                  <div>
+                    <Label help="Pour information — non bloquant.">
+                      Mode de règlement préféré (optionnel)
+                    </Label>
+                    <RadioRow
+                      ariaLabel="Mode de règlement"
+                      options={PAYMENT_METHOD_OPTIONS}
+                      value={data.preferred_payment_method}
+                      onChange={(v) =>
+                        updateData({ preferred_payment_method: v as "cb" | "chq" | "esp" | "virt" })
+                      }
+                      columns={4}
                     />
                   </div>
                   <label className="mt-1 flex cursor-pointer items-start gap-2.5 text-[12px] leading-relaxed text-[var(--color-devis-muted)]">

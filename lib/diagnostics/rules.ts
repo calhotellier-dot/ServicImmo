@@ -61,7 +61,7 @@ export function calculateRequiredDiagnostics(data: QuoteFormData): DiagnosticsRe
   // projets, il fera 2 demandes distinctes — à voir avec Servicimmo).
   if (data.project_type === "works") {
     addWorksDiagnostics(data, required, toClarify);
-    return { required, toClarify };
+    return applyExistingValid(data, { required, toClarify });
   }
 
   // Cas "coownership" (gestion syndic) — on a très peu d'info, on propose
@@ -69,7 +69,7 @@ export function calculateRequiredDiagnostics(data: QuoteFormData): DiagnosticsRe
   // affiner au RDV.
   if (data.project_type === "coownership") {
     addCoownershipDiagnostics(data, required, toClarify);
-    return { required, toClarify };
+    return applyExistingValid(data, { required, toClarify });
   }
 
   // Cas "other" — aucune règle fiable applicable. On retourne un résultat vide,
@@ -90,7 +90,99 @@ export function calculateRequiredDiagnostics(data: QuoteFormData): DiagnosticsRe
   addBoutin(data, required);
   addERP(data, required);
 
-  return { required, toClarify };
+  // Chauffage collectif + copropriété → DPE collectif probable
+  addCollectiveDPE(data, toClarify);
+
+  return applyExistingValid(data, { required, toClarify });
+}
+
+// ---------------------------------------------------------------------------
+// Filtre "diagnostics déjà valides"
+// ---------------------------------------------------------------------------
+// Si le client déclare avoir un diagnostic encore valide, on le retire de
+// `required`. Exception : amiante et plomb — on rétrograde en `toClarify`
+// avec une note "document à vérifier" tant que le client n'a pas uploadé
+// l'ancien rapport (lecture Servicimmo indispensable pour le réutiliser).
+//
+// Mapping entre ExistingDiagnosticId (input client) et DiagnosticId (moteur) :
+//   'asbestos' couvre aussi 'dapp' et 'asbestos_works' (même pièce, amiante)
+//   'lead' couvre 'lead_works'
+function applyExistingValid(
+  data: QuoteFormData,
+  result: DiagnosticsResult
+): DiagnosticsResult {
+  const existing = data.existing_valid_diagnostics;
+  if (!existing || existing.length === 0) return result;
+
+  const files = data.existing_diagnostics_files ?? [];
+  const hasDoc = files.length > 0;
+
+  const nextRequired: RequiredDiagnostic[] = [];
+  const extraToClarify: RequiredDiagnostic[] = [];
+
+  for (const diag of result.required) {
+    const matchedExisting = matchExisting(diag.id, existing);
+    if (!matchedExisting) {
+      nextRequired.push(diag);
+      continue;
+    }
+
+    // Amiante / plomb : document à vérifier si aucun upload fourni.
+    const needsDocCheck =
+      matchedExisting === "asbestos" || matchedExisting === "lead";
+
+    if (needsDocCheck && !hasDoc) {
+      extraToClarify.push({
+        ...diag,
+        reason: `Diagnostic déclaré encore valide — document à vérifier sur place (${diag.name.toLowerCase()}).`,
+      });
+    }
+    // Sinon : on le retire complètement (économie réelle pour le client).
+  }
+
+  return {
+    required: nextRequired,
+    toClarify: [...result.toClarify, ...extraToClarify],
+  };
+}
+
+function matchExisting(
+  id: RequiredDiagnostic["id"],
+  existing: NonNullable<QuoteFormData["existing_valid_diagnostics"]>
+): "dpe" | "lead" | "asbestos" | "gas" | "electric" | "termites" | "erp" | "carrez" | "boutin" | null {
+  if (id === "dpe" && existing.includes("dpe")) return "dpe";
+  if ((id === "lead" || id === "lead_works") && existing.includes("lead")) return "lead";
+  if (
+    (id === "asbestos" || id === "dapp" || id === "asbestos_works" || id === "dta") &&
+    existing.includes("asbestos")
+  ) {
+    return "asbestos";
+  }
+  if (id === "gas" && existing.includes("gas")) return "gas";
+  if (id === "electric" && existing.includes("electric")) return "electric";
+  if (id === "termites" && existing.includes("termites")) return "termites";
+  if (id === "erp" && existing.includes("erp")) return "erp";
+  if (id === "carrez" && existing.includes("carrez")) return "carrez";
+  if (id === "boutin" && existing.includes("boutin")) return "boutin";
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// DPE collectif (copropriété + chauffage collectif)
+// ---------------------------------------------------------------------------
+function addCollectiveDPE(data: QuoteFormData, toClarify: RequiredDiagnostic[]): void {
+  if (data.is_coownership !== true) return;
+  if (data.heating_mode !== "collective") return;
+  // Éviter le doublon si déjà signalé dans le flow coownership
+  if (toClarify.some((d) => d.id === "dpe_collective")) return;
+
+  toClarify.push({
+    id: "dpe_collective",
+    name: "DPE Collectif",
+    reason:
+      "Copropriété à chauffage collectif : le DPE collectif est probablement obligatoire (à confirmer selon le nombre de lots, calendrier 2024-2026).",
+    validityMonths: 120,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -173,10 +265,13 @@ function addAsbestos(
     } else {
       // Location : DAPP (logement uniquement, parties privatives)
       if (isLogement(data.property_type)) {
+        const hasDependencies = (data.dependencies?.length ?? 0) > 0;
         required.push({
           id: "dapp",
           name: "DAPP — Diagnostic Amiante des Parties Privatives",
-          reason: "Location d'un logement pré-1997 : DAPP obligatoire sur les parties privatives.",
+          reason: hasDependencies
+            ? "Location d'un logement pré-1997 : DAPP obligatoire sur les parties privatives (inclut cave, garage, atelier si applicable)."
+            : "Location d'un logement pré-1997 : DAPP obligatoire sur les parties privatives.",
           validityMonths: -1,
         });
       }

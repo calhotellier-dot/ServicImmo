@@ -65,6 +65,46 @@ export const urgencySchema = z.enum(["asap", "week", "two_weeks", "month", "flex
 
 export const civilitySchema = z.enum(["mr", "mme", "other"]);
 
+// ── Extensions V2 "rappel téléphone" ────────────────────────────────────────
+
+export const heatingModeSchema = z.enum(["individual", "collective", "unknown"]);
+
+export const ecsTypeSchema = z.enum([
+  "same_as_heating",
+  "electric",
+  "gas",
+  "solar",
+  "other",
+  "unknown",
+]);
+
+export const referralSourceSchema = z.enum([
+  "particulier",
+  "agence",
+  "notaire",
+  "syndic",
+  "recommandation",
+  "autre",
+]);
+
+export const cooktopConnectionSchema = z.enum(["souple", "rigide", "unknown"]);
+
+export const paymentMethodSchema = z.enum(["cb", "chq", "esp", "virt"]);
+
+export const dependencySchema = z.enum(["cave", "garage", "atelier", "sous_sol", "combles"]);
+
+export const existingDiagnosticIdSchema = z.enum([
+  "dpe",
+  "lead",
+  "asbestos",
+  "gas",
+  "electric",
+  "termites",
+  "erp",
+  "carrez",
+  "boutin",
+]);
+
 // ---------------------------------------------------------------------------
 // Étapes
 // ---------------------------------------------------------------------------
@@ -84,6 +124,26 @@ export const step2Schema = z.object({
     .max(10_000, "Surface improbable"),
   rooms_count: z.number({ invalid_type_error: "Nombre de pièces attendu" }).int().min(1).max(20),
   is_coownership: z.boolean().nullable(),
+
+  // Dépendances (optionnelles — peu de biens en ont)
+  dependencies: z.array(dependencySchema).optional(),
+  dependencies_converted: z.boolean().nullable().optional(),
+
+  // Appartement (optionnels, validés conditionnellement dans fullQuoteSchema)
+  residence_name: z.string().max(200).optional(),
+  floor: z.number().int().min(-5).max(100).optional(),
+  is_top_floor: z.boolean().nullable().optional(),
+  door_number: z.string().max(20).optional(),
+  is_duplex: z.boolean().nullable().optional(),
+
+  // Divers
+  purchase_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  cadastral_reference: z.string().max(100).optional(),
+
+  // Commercial / tertiaire
+  commercial_activity: z.string().max(200).optional(),
+  heated_zones_count: z.number().int().min(0).max(50).optional(),
+  configuration_notes: z.string().max(2000).optional(),
 });
 
 export const step3Schema = z.object({
@@ -98,21 +158,38 @@ export const step4Schema = z.object({
   electric_over_15_years: z.boolean().nullable(),
   rental_furnished: rentalFurnishedSchema.optional(),
   works_type: worksTypeSchema.optional(),
+
+  // ── Extensions V2 ────────────────────────────────────────────────────────
+  heating_mode: heatingModeSchema.optional(),
+  ecs_type: ecsTypeSchema.optional(),
+  syndic_contact: z.string().max(500).optional(),
+  cooktop_connection: cooktopConnectionSchema.optional(),
 });
 
 export const step5Schema = z.object({
   urgency: urgencySchema,
   notes: z.string().max(2000, "2000 caractères max").optional(),
+  referral_source: referralSourceSchema.optional(),
+  referral_other: z.string().max(200).optional(),
+  // Diagnostics déjà en cours de validité
+  existing_valid_diagnostics: z.array(existingDiagnosticIdSchema).optional(),
+  existing_diagnostics_files: z.array(z.string().url()).optional(),
 });
 
 export const step6Schema = z.object({
   civility: civilitySchema,
   first_name: z.string().min(1, "Prénom requis"),
   last_name: z.string().min(1, "Nom requis"),
+  // V2 : téléphone désormais **obligatoire** — automatisation du rappel ops.
   phone: z
     .string()
-    .optional()
-    .refine((v) => !v || v.replace(/\D/g, "").length >= 8, "Téléphone trop court (≥ 8 chiffres)"),
+    .min(1, "Téléphone requis")
+    .refine((v) => v.replace(/\D/g, "").length >= 8, "Téléphone trop court (≥ 8 chiffres)"),
+  // Accès au bien (collectés dans l'accordéon "Contact & accès" du Filling)
+  access_notes: z.string().max(1000).optional(),
+  tenants_in_place: z.boolean().nullable().optional(),
+  // Mode de règlement préféré (info ops)
+  preferred_payment_method: paymentMethodSchema.optional(),
   // On ne peut pas utiliser `z.literal(true)` : ça force un type `true` très
   // strict côté React Hook Form (casse defaultValues=false). On valide via
   // `.refine`.
@@ -131,13 +208,62 @@ export const fullQuoteSchema = step1Schema
   .merge(step4Schema)
   .merge(step5Schema)
   .merge(step6Schema)
-  .refine((data) => data.project_type !== "rental" || data.rental_furnished !== undefined, {
-    message: "En location, le type de bail (vide / meublé / saisonnier) est requis.",
-    path: ["rental_furnished"],
-  })
-  .refine((data) => data.project_type !== "works" || data.works_type !== undefined, {
-    message: "Pour un projet de travaux, précisez le type d'intervention.",
-    path: ["works_type"],
+  .superRefine((data, ctx) => {
+    // Branche location → type de bail requis
+    if (data.project_type === "rental" && data.rental_furnished === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["rental_furnished"],
+        message: "En location, le type de bail (vide / meublé / saisonnier) est requis.",
+      });
+    }
+    // Branche travaux → type de chantier requis
+    if (data.project_type === "works" && data.works_type === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["works_type"],
+        message: "Pour un projet de travaux, précisez le type d'intervention.",
+      });
+    }
+    // Appartement → étage requis
+    if (data.property_type === "apartment") {
+      if (data.floor === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["floor"],
+          message: "Précisez l'étage de l'appartement.",
+        });
+      }
+    }
+    // Commercial → activité requise
+    if (data.property_type === "commercial" && !data.commercial_activity) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["commercial_activity"],
+        message: "Précisez l'activité exercée dans le local.",
+      });
+    }
+    // Gaz présent → raccordement table de cuisson requis
+    if (
+      data.gas_installation &&
+      data.gas_installation !== "none" &&
+      data.gas_installation !== "unknown" &&
+      !data.cooktop_connection
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["cooktop_connection"],
+        message: "Précisez le type de raccordement de la table de cuisson.",
+      });
+    }
+    // Source "autre" → précision requise
+    if (data.referral_source === "autre" && !data.referral_other) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["referral_other"],
+        message: "Précisez la source du contact.",
+      });
+    }
   });
 
 // ---------------------------------------------------------------------------
@@ -162,6 +288,11 @@ export const calculatePayloadSchema = step1Schema
   .merge(
     z.object({
       urgency: urgencySchema.optional(),
+      // V2 : diagnostics déjà valides + pièces jointes client (pour le filtre
+      // des required dans le moteur de règles).
+      existing_valid_diagnostics: z.array(existingDiagnosticIdSchema).optional(),
+      existing_diagnostics_files: z.array(z.string().url()).optional(),
+      tenants_in_place: z.boolean().nullable().optional(),
     })
   );
 

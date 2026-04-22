@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { basePrice, estimatePrice } from "../pricing";
+import {
+  basePrice,
+  buildFallbackGrid,
+  estimatePrice,
+  estimatePriceWithGrid,
+} from "../pricing";
 import type { PricingContext, PropertyType, RequiredDiagnostic } from "../types";
 
 // ---------------------------------------------------------------------------
@@ -301,5 +306,137 @@ describe("Cas 14 — Gestion copropriété avec DTA (sur devis indicatif)", () =
     // Base DTA: 400-900 ; surface >150 → ×1.2 → 480-1080 → arrondi dizaine → 480-1080
     expect(result.min).toBe(480);
     expect(result.max).toBe(1080);
+  });
+});
+
+// ===========================================================================
+// V2 — Modulateur distance > 50 km (+30 € flat)
+// ===========================================================================
+describe("V2 / Cas distance — CP Paris à >50 km avec distance_km renseigné", () => {
+  it("ajoute +30 € flat au lieu du +15 % zone quand distance_km > 50 est connue", () => {
+    const diagnostics = [diag("dpe"), diag("erp"), diag("electric")];
+    const result = estimatePrice(diagnostics, {
+      surface: 100,
+      postal_code: "75001",
+      property_type: "house",
+      urgency: null,
+      distance_km: 240, // Paris-Tours ≈ 240 km
+    });
+
+    // Base: dpe 110-220 + erp 20-40 + electric 90-130 = 220-390
+    // Surface 80-150 → ×1.1 → 242-429
+    // Distance >50 → +30 → 272-459
+    // Pack ≥3 → ×0.85 → 231.2-390.15 → arrondi dizaine → 230-390
+    expect(result.min).toBe(230);
+    expect(result.max).toBe(390);
+    expect(result.appliedModulators).toContain("Déplacement > 50 km (+30 €)");
+    expect(result.appliedModulators).not.toContain("Hors Indre-et-Loire (+15 %)");
+  });
+});
+
+// ===========================================================================
+// V2 — Joué-lès-Tours (37300) : aucune majoration zone ni distance
+// ===========================================================================
+describe("V2 / Cas distance — CP 37300 Joué-lès-Tours", () => {
+  it("n'applique ni +15 % zone ni +30 € distance", () => {
+    const result = estimatePrice([diag("dpe"), diag("erp"), diag("electric")], {
+      surface: 100,
+      postal_code: "37300",
+      property_type: "house",
+      urgency: null,
+      distance_km: 6, // Joué est à quelques km
+    });
+
+    expect(
+      result.appliedModulators.some((m) => m.includes("Déplacement"))
+    ).toBe(false);
+    expect(result.appliedModulators).not.toContain("Hors Indre-et-Loire (+15 %)");
+  });
+});
+
+// ===========================================================================
+// V2 — Fallback : CP hors 37 SANS distance_km renseigné → retombe sur +15 %
+// ===========================================================================
+describe("V2 / Cas fallback — hors 37 sans distance_km", () => {
+  it("retombe sur le modulateur historique +15 % si distance inconnue", () => {
+    const result = estimatePrice([diag("erp")], {
+      surface: 100,
+      postal_code: "75001",
+      property_type: "house",
+      urgency: null,
+      // pas de distance_km
+    });
+
+    expect(result.appliedModulators).toContain("Hors Indre-et-Loire (+15 %)");
+    expect(result.appliedModulators).not.toContain("Déplacement > 50 km (+30 €)");
+  });
+});
+
+// ===========================================================================
+// V2 — Modulateur chauffage collectif + DPE collectif
+// ===========================================================================
+describe("V2 / Cas chauffage collectif — DPE collectif +10 %", () => {
+  it("ajoute +10 % sur le total quand heating_mode=collective et dpe_collective présent", () => {
+    // Diag unique dpe_collective (600-1500)
+    const withMod = estimatePrice([diag("dpe_collective")], {
+      surface: 100,
+      postal_code: "37000",
+      property_type: "apartment",
+      urgency: null,
+      heating_mode: "collective",
+    });
+    const withoutMod = estimatePrice([diag("dpe_collective")], {
+      surface: 100,
+      postal_code: "37000",
+      property_type: "apartment",
+      urgency: null,
+      heating_mode: "individual",
+    });
+
+    expect(withMod.min).toBeGreaterThan(withoutMod.min);
+    expect(withMod.appliedModulators).toContain("Chauffage collectif (+10 %)");
+    expect(withoutMod.appliedModulators).not.toContain("Chauffage collectif (+10 %)");
+  });
+});
+
+// ===========================================================================
+// V2 — Duplex : pas de modulateur dédié, band surface applique
+// ===========================================================================
+describe("V2 / Cas duplex — 180 m² → band large", () => {
+  it("applique uniquement le modulateur surface large (+20 %) sans modulateur duplex", () => {
+    const result = estimatePrice([diag("dpe")], {
+      surface: 180,
+      postal_code: "37000",
+      property_type: "apartment",
+      urgency: null,
+    });
+
+    expect(result.appliedModulators).toContain("Surface > 150 m² (+20 %)");
+    // Pas de modulateur duplex
+    expect(result.appliedModulators.every((m) => !m.toLowerCase().includes("duplex"))).toBe(
+      true
+    );
+  });
+});
+
+// ===========================================================================
+// V2 — buildFallbackGrid cohérent avec BASE_PRICES
+// ===========================================================================
+describe("V2 / Grille fallback cohérente avec BASE_PRICES", () => {
+  it("retourne les mêmes fourchettes que l'API legacy estimatePrice", () => {
+    const grid = buildFallbackGrid();
+    const diagnostics = [diag("dpe"), diag("erp")];
+    const ctx = {
+      surface: 100,
+      postal_code: "37000",
+      property_type: "house" as PropertyType,
+      urgency: null,
+    };
+
+    const viaGrid = estimatePriceWithGrid(grid, diagnostics, ctx);
+    const viaLegacy = estimatePrice(diagnostics, ctx);
+
+    expect(viaGrid.min).toBe(viaLegacy.min);
+    expect(viaGrid.max).toBe(viaLegacy.max);
   });
 });

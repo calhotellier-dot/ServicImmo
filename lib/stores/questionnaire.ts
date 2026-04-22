@@ -72,9 +72,12 @@ export const useQuestionnaireStore = create<QuestionnaireState>()(
     }),
     {
       name: "servicimmo-quote",
-      // v2 = pivot UX vers 4 écrans. Invalide les stores v1 (6 étapes) pour
-      // éviter qu'un ancien `currentStep` numérique casse l'hydratation.
-      version: 2,
+      // v3 = extensions "rappel téléphone" (accès, chauffage indiv/collectif,
+      // dépendances, diag existants, téléphone obligatoire…). Migration
+      // conservatrice v2 → v3 : on garde les données saisies, les nouveaux
+      // champs démarrent à `undefined`.
+      // v2 = pivot UX vers 4 écrans. v1 = ancien 6 étapes (reset complet).
+      version: 3,
       partialize: (state) => ({
         currentScreen: state.currentScreen,
         data: state.data,
@@ -82,8 +85,7 @@ export const useQuestionnaireStore = create<QuestionnaireState>()(
         submitted: state.submitted,
       }),
       migrate: (persistedState, fromVersion) => {
-        // Toute version antérieure perd son état : la forme a trop changé pour
-        // qu'une migration automatique ait du sens. On remet à zéro proprement.
+        // v1 → reset (forme trop différente).
         if (fromVersion < 2) {
           return {
             currentScreen: "entry",
@@ -92,6 +94,7 @@ export const useQuestionnaireStore = create<QuestionnaireState>()(
             submitted: false,
           };
         }
+        // v2 → v3 : rien à convertir, les nouveaux champs sont optionnels.
         return persistedState as {
           currentScreen: QuestionnaireScreen;
           data: QuestionnaireData;

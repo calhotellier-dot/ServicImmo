@@ -355,3 +355,113 @@ describe("Cas 17 — Vente maison après 1997 avec gas_installation=unknown", ()
     expect(ids(result.toClarify)).toContain("gas");
   });
 });
+
+// ===========================================================================
+// V2 — Diagnostic DPE déjà valide → retiré de required
+// ===========================================================================
+describe("V2 / Cas existing_valid — DPE déjà valide", () => {
+  it("exclut le DPE de required quand déclaré valide", () => {
+    const result = calculateRequiredDiagnostics(
+      makeData({
+        existing_valid_diagnostics: ["dpe"],
+      })
+    );
+
+    expect(ids(result.required)).not.toContain("dpe");
+    // ERP et Termites doivent rester
+    expect(ids(result.required)).toContain("erp");
+    expect(ids(result.required)).toContain("termites");
+  });
+});
+
+// ===========================================================================
+// V2 — Amiante déclarée valide SANS upload → reste en toClarify
+// ===========================================================================
+describe("V2 / Cas existing_valid — amiante sans document", () => {
+  it("rétrograde amiante en toClarify tant que le document n'est pas fourni", () => {
+    const result = calculateRequiredDiagnostics(
+      makeData({
+        permit_date_range: "1949_to_1997",
+        existing_valid_diagnostics: ["asbestos"],
+        existing_diagnostics_files: [], // aucun upload
+      })
+    );
+
+    expect(ids(result.required)).not.toContain("asbestos");
+    expect(ids(result.toClarify)).toContain("asbestos");
+  });
+});
+
+// ===========================================================================
+// V2 — Amiante déclarée valide AVEC upload → complètement retirée
+// ===========================================================================
+describe("V2 / Cas existing_valid — amiante avec document fourni", () => {
+  it("retire amiante de required et toClarify quand le document est fourni", () => {
+    const result = calculateRequiredDiagnostics(
+      makeData({
+        permit_date_range: "1949_to_1997",
+        existing_valid_diagnostics: ["asbestos"],
+        existing_diagnostics_files: ["https://example.com/amiante.pdf"],
+      })
+    );
+
+    expect(ids(result.required)).not.toContain("asbestos");
+    expect(ids(result.toClarify)).not.toContain("asbestos");
+  });
+});
+
+// ===========================================================================
+// V2 — Copropriété + chauffage collectif → DPE collectif en toClarify
+// ===========================================================================
+describe("V2 / Cas DPE collectif — copro + heating_mode=collective", () => {
+  it("ajoute dpe_collective en toClarify", () => {
+    const result = calculateRequiredDiagnostics(
+      makeData({
+        project_type: "sale",
+        property_type: "apartment",
+        is_coownership: true,
+        heating_mode: "collective",
+      })
+    );
+
+    expect(ids(result.toClarify)).toContain("dpe_collective");
+  });
+});
+
+// ===========================================================================
+// V2 — Local commercial → dpe_tertiary au lieu de dpe logement
+// ===========================================================================
+describe("V2 / Cas commercial — vente local pro", () => {
+  it("déclenche dpe_tertiary + erp, pas de dpe logement", () => {
+    const result = calculateRequiredDiagnostics(
+      makeData({
+        property_type: "commercial",
+        permit_date_range: "after_1997",
+      })
+    );
+
+    expect(ids(result.required)).toContain("dpe_tertiary");
+    expect(ids(result.required)).not.toContain("dpe");
+    expect(ids(result.required)).toContain("erp");
+  });
+});
+
+// ===========================================================================
+// V2 — Location logement pré-1997 avec dépendances → note étendue sur DAPP
+// ===========================================================================
+describe("V2 / Cas dépendances — DAPP avec mention cave/garage", () => {
+  it("étend la raison DAPP quand des dépendances sont déclarées", () => {
+    const result = calculateRequiredDiagnostics(
+      makeData({
+        project_type: "rental",
+        permit_date_range: "1949_to_1997",
+        rental_furnished: "vide",
+        dependencies: ["cave", "garage"],
+      })
+    );
+
+    const dapp = result.required.find((d) => d.id === "dapp");
+    expect(dapp).toBeDefined();
+    expect(dapp?.reason).toMatch(/cave|garage|atelier/i);
+  });
+});

@@ -56,6 +56,48 @@ export type WorksType =
   | "other"
   | "unknown";
 
+/** Mode de chauffage : individuel ou collectif (déclenche le DPE collectif en copro). */
+export type HeatingMode = "individual" | "collective" | "unknown";
+
+/** Production d'eau chaude sanitaire. */
+export type EcsType =
+  | "same_as_heating"
+  | "electric"
+  | "gas"
+  | "solar"
+  | "other"
+  | "unknown";
+
+/** Source prescripteur (remplace/complète l'UTM source pour les leads téléphone). */
+export type ReferralSource =
+  | "particulier"
+  | "agence"
+  | "notaire"
+  | "syndic"
+  | "recommandation"
+  | "autre";
+
+/** Raccordement de la table de cuisson (affine le diag gaz). */
+export type CooktopConnection = "souple" | "rigide" | "unknown";
+
+/** Mode de règlement préféré (info ops, non bloquant). */
+export type PaymentMethod = "cb" | "chq" | "esp" | "virt";
+
+/** Type de dépendance. Enum ouvert : plusieurs peuvent coexister. */
+export type Dependency = "cave" | "garage" | "atelier" | "sous_sol" | "combles";
+
+/** Diagnostics connus par le client comme étant déjà en cours de validité. */
+export type ExistingDiagnosticId =
+  | "dpe"
+  | "lead"
+  | "asbestos"
+  | "gas"
+  | "electric"
+  | "termites"
+  | "erp"
+  | "carrez"
+  | "boutin";
+
 /**
  * Données du formulaire utilisées par le moteur de règles.
  *
@@ -79,6 +121,20 @@ export type QuoteFormData = {
   // Optionnels selon le projet
   rental_furnished?: RentalFurnished;
   works_type?: WorksType;
+
+  // ── Extensions V2 "rappel téléphone" ─────────────────────────────────────
+  // Tous optionnels pour ne pas casser le moteur avec d'anciens drafts.
+  heating_mode?: HeatingMode;
+  ecs_type?: EcsType;
+  dependencies?: Dependency[];
+  dependencies_converted?: boolean | null;
+  existing_valid_diagnostics?: ExistingDiagnosticId[];
+  existing_diagnostics_files?: string[]; // URLs Supabase Storage
+  tenants_in_place?: boolean | null;
+  is_duplex?: boolean | null;
+  is_top_floor?: boolean | null;
+  /** Distance au siège Servicimmo en km (calculée côté serveur depuis le CP). */
+  distance_km?: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -134,12 +190,16 @@ export type Urgency = "asap" | "week" | "two_weeks" | "month" | "flexible";
 export type PricingContext = {
   /** Surface habitable en m². Utilisée pour le modulateur de surface. */
   surface: number;
-  /** Code postal complet. Utilisé pour détecter "zone > 30 km de Tours". */
+  /** Code postal complet. Utilisé pour détecter "zone > 50 km de Tours". */
   postal_code: string;
   /** Type de bien : influe sur DPE, Amiante, DAPP (maison vs appartement). */
   property_type: PropertyType;
   /** Dès que possible (< 48h) → supplément urgence. */
   urgency: Urgency | null;
+  /** Chauffage collectif → surcoût sur DPE collectif si copropriété. */
+  heating_mode?: HeatingMode;
+  /** Distance au siège Servicimmo (Tours) en km. Si > 50 → +30 € flat. */
+  distance_km?: number;
 };
 
 export type PriceEstimate = {

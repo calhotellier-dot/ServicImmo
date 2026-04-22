@@ -38,6 +38,26 @@ export type Civility = "mr" | "mme" | "other";
 
 export type ServiceCategory = "particulier" | "pro" | "amiante" | "autre";
 
+// ── Enums V2 "rappel téléphone" (migration 0002) ────────────────────────────
+
+export type HeatingMode = "individual" | "collective" | "unknown";
+export type EcsType =
+  | "same_as_heating"
+  | "electric"
+  | "gas"
+  | "solar"
+  | "other"
+  | "unknown";
+export type ReferralSource =
+  | "particulier"
+  | "agence"
+  | "notaire"
+  | "syndic"
+  | "recommandation"
+  | "autre";
+export type CooktopConnection = "souple" | "rigide" | "unknown";
+export type PaymentMethod = "cb" | "chq" | "esp" | "virt";
+
 // ---------------------------------------------------------------------------
 // Row shapes
 // ---------------------------------------------------------------------------
@@ -101,6 +121,45 @@ export type QuoteRequestRow = {
   campaign: string | null;
   referer: string | null;
   user_agent: string | null;
+
+  // ── Extensions V2 "rappel téléphone" (migration 0002) ─────────────────
+  tenants_in_place: boolean | null;
+  access_notes: string | null;
+  heating_mode: HeatingMode | null;
+  ecs_type: EcsType | null;
+  syndic_contact: string | null;
+  dependencies: string[] | null;
+  dependencies_converted: boolean | null;
+  existing_valid_diagnostics: string[] | null;
+  existing_diagnostics_files: Json;
+  referral_source: ReferralSource | null;
+  referral_other: string | null;
+  residence_name: string | null;
+  floor: number | null;
+  is_top_floor: boolean | null;
+  door_number: string | null;
+  is_duplex: boolean | null;
+  purchase_date: string | null;
+  cooktop_connection: CooktopConnection | null;
+  cadastral_reference: string | null;
+  commercial_activity: string | null;
+  heated_zones_count: number | null;
+  configuration_notes: string | null;
+  preferred_payment_method: PaymentMethod | null;
+  distance_km: number | null;
+};
+
+// ── Table pricing_rules (migration 0002) ─────────────────────────────────
+
+export type PricingRuleRow = {
+  id: number;
+  diagnostic_id: string;
+  context: string;
+  price_min: number;
+  price_max: number;
+  notes: string | null;
+  is_active: boolean;
+  updated_at: string;
 };
 
 export type ServiceRow = {
@@ -242,6 +301,15 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<Omit<ActionLogRow, "id">>;
+        Relationships: [];
+      };
+      pricing_rules: {
+        Row: PricingRuleRow;
+        Insert: Omit<PricingRuleRow, "id" | "updated_at"> & {
+          id?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<PricingRuleRow, "id">>;
         Relationships: [];
       };
     };
