@@ -1,23 +1,37 @@
 import type { ReactNode } from "react";
 
+import { AppHeader } from "@/components/layout/AppHeader";
+import { AppSidebar } from "@/components/layout/AppSidebar";
+import { getCurrentUser } from "@/lib/features/auth/session";
+
 /**
- * Layout du groupe (app) — app Pilote interne (Phase 1 PRIORITAIRE).
+ * Layout du groupe (app).
  *
- * Stub Sprint 0 — l'authentification + sidebar + header arriveront au
- * Sprint 1 (F-02, F-03). Pour l'instant, enveloppe minimale.
+ * Sprint 1 : sidebar + header + récupération du profil utilisateur.
+ * Le middleware a déjà redirigé les non-connectés vers /login, donc si on
+ * arrive ici et que `getCurrentUser()` renvoie null, c'est que l'env Supabase
+ * n'est pas provisionné → on affiche quand même l'UI en mode "démo".
  */
-export default function AppLayout({ children }: { children: ReactNode }) {
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const user = await getCurrentUser();
+
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900">
-      <header className="border-b border-neutral-200 bg-white px-6 py-3">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="text-sm font-medium">Servicimmo · App Pilote</div>
-          <div className="font-mono text-[11px] tracking-widest text-neutral-400">
-            SPRINT 0 — STUB
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+    <div className="flex h-screen bg-neutral-50 text-neutral-900">
+      <AppSidebar />
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <AppHeader
+          userEmail={user?.email ?? null}
+          userName={
+            user
+              ? [user.profile.first_name, user.profile.last_name]
+                  .filter(Boolean)
+                  .join(" ") || null
+              : null
+          }
+          role={user?.profile.role ?? null}
+        />
+        <main className="flex-1 overflow-auto px-8 py-6">{children}</main>
+      </div>
     </div>
   );
 }
