@@ -42,7 +42,10 @@ export async function createDraftDossier(): Promise<ActionResult<{ id: string }>
       .select("id")
       .single();
     if (error) return err(error.message);
-    revalidatePath("/app/dossiers");
+    // NB : pas de revalidatePath ici. `createDraftDossier` est appelé depuis
+    // une page Server Component (/app/dossiers/new) pendant le render →
+    // Next 16 interdit revalidatePath à cet endroit. La navigation vers
+    // /app/dossiers/[id] qui suit fetch fresh de toute façon.
     return { ok: true, data: { id: data.id } };
   } catch (e) {
     return err((e as Error).message);
