@@ -84,7 +84,7 @@ export function Contact() {
                 estimation adaptée à votre bien.
               </p>
 
-              <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+              <form className="flex flex-col gap-4">
                 <Reveal direction="up" delay={0.05}>
                   <div className="flex flex-col gap-[6px]">
                     <label
