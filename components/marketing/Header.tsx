@@ -75,7 +75,7 @@ export function Header() {
             href="/devis"
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-[6px] bg-[color:var(--color-home-saf)] px-[22px] py-[13px] font-[family-name:var(--font-sora)] text-[14px] font-semibold text-[color:var(--color-home-slate)] transition-opacity hover:opacity-90"
           >
-            Commencer mon devis
+            Demander un devis
           </Link>
 
           <button
