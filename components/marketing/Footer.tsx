@@ -1,6 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { PhoneIcon, MailIcon, MapPinIcon, ClockIcon, AwardIcon, ShieldIcon, BuildingIcon, BadgeIcon, FlaskConicalIcon, FacebookIcon, InstagramIcon, LinkedinIcon } from "lucide-react";
+
+import { LogoServicimmo } from "@/components/marketing/LogoServicimmo";
 
 const NAV_LINKS = [
   { label: "Accueil", href: "/" },
@@ -34,19 +35,13 @@ const CERTIFICATIONS = [
  */
 export function Footer() {
   return (
-    <footer className="bg-[color:var(--color-home-ink)] text-[#c7d2e0]">
+    <footer className="bg-[color:var(--color-si-petrole)] text-[#c7d2e0]">
       {/* Top */}
       <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-10 px-6 pb-14 pt-[84px] sm:grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_1.1fr] md:px-8">
         {/* Colonne 1 : brand */}
         <div>
           <div className="mb-4">
-            <Image
-              src="/img/logo-servicimmo.png"
-              alt="Servicimmo"
-              width={243}
-              height={125}
-              className="h-[40px] w-auto rounded-[11px] bg-white px-[13px] py-[9px]"
-            />
+            <LogoServicimmo tone="light" withTagline className="text-[26px]" />
           </div>
           <p className="mb-[22px] max-w-[330px] text-[14.5px] leading-[1.7] text-[#9fb0c4]">
             Cabinet de diagnostic immobilier indépendant à Tours depuis 1998.
