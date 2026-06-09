@@ -28,7 +28,7 @@ const POINTS = [
 
 /** Section Pourquoi Servicimmo (v-about-1) — home.html:123-151 */
 export function About() {
-  const { ref: yearsRef, value: yearsValue } = useCountUp(28);
+  const { ref: countRef, value: countValue } = useCountUp(10000);
 
   return (
     <section
@@ -61,18 +61,18 @@ export function About() {
                 </span>
               </div>
 
-              {/* Encart flottant « 28 ans » */}
-              <div className="absolute -right-7 bottom-[46px] flex flex-col gap-1 rounded-[18px] border-b-[5px] border-[color:var(--color-home-saf)] bg-[color:var(--color-home-ink)] px-[26px] py-[22px] shadow-[0_16px_48px_rgba(15,30,58,.35)]">
-                <div className="flex items-baseline gap-2 font-[family-name:var(--font-sora)] text-[48px] font-extrabold leading-none text-white">
-                  <span ref={yearsRef}>{yearsValue}</span>
-                  <em className="not-italic text-[18px] font-semibold text-[color:var(--color-home-saf)]">
-                    ans
+              {/* Encart flottant « 10 000+ diagnostics » */}
+              <div className="absolute -right-7 bottom-[46px] flex flex-col gap-1 rounded-[18px] border-b-[5px] border-[color:var(--color-home-saf)] bg-[color:var(--color-si-petrole)] px-[26px] py-[22px] shadow-[0_16px_48px_rgba(15,30,58,.35)]">
+                <div className="flex items-baseline gap-1 font-[family-name:var(--font-sora)] text-[40px] font-extrabold leading-none text-white">
+                  <span ref={countRef}>{countValue.toLocaleString("fr-FR")}</span>
+                  <em className="not-italic text-[26px] font-extrabold text-[color:var(--color-home-saf)]">
+                    +
                   </em>
                 </div>
                 <p className="text-[13px] leading-[1.4] text-white/70">
-                  d&apos;expertise locale
+                  diagnostics réalisés
                   <br />
-                  depuis 1998
+                  en Indre-et-Loire
                 </p>
               </div>
             </div>

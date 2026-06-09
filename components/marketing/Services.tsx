@@ -102,7 +102,7 @@ export function Services() {
                 {/* Texte */}
                 <div className="si-txt relative px-6 py-[10px]">
                   {/* Numéro décoratif */}
-                  <span className="pointer-events-none absolute right-6 top-[-6px] z-0 font-[family-name:var(--font-sora)] text-[64px] font-extrabold leading-none text-[color:var(--color-home-saf-bg)]">
+                  <span className="pointer-events-none absolute right-6 top-[-6px] z-0 font-[family-name:var(--font-sora)] text-[64px] font-extrabold leading-none text-[#00585f4d]">
                     {row.num}
                   </span>
 

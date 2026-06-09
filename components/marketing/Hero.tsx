@@ -1,39 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRightIcon, PhoneIcon, ZapIcon, ClockIcon, MapPinIcon, AwardIcon, ShieldCheckIcon, BuildingIcon } from "lucide-react";
+import { ArrowRightIcon, PhoneIcon, ZapIcon, ClockIcon, MapPinIcon, ShieldCheckIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Reveal } from "@/components/marketing/Reveal";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useQuoteModal } from "@/components/questionnaire/QuoteModalProvider";
-
-/* ─── Sous-composant : bandeau certifications ─── */
-const CERTS = [
-  { icon: <AwardIcon className="h-[14px] w-[14px]" aria-hidden />, label: "Qualixpert" },
-  { icon: <ShieldCheckIcon className="h-[14px] w-[14px]" aria-hidden />, label: "Allianz" },
-  { icon: <BuildingIcon className="h-[14px] w-[14px]" aria-hidden />, label: "FNAIM Diagnostic" },
-  { icon: <AwardIcon className="h-[14px] w-[14px]" aria-hidden />, label: "iCert" },
-] as const;
-
-function CertStrip() {
-  return (
-    <Reveal direction="up" className="mt-11 flex flex-wrap items-center gap-3.5 border-t border-[color:var(--color-home-line)] pt-7">
-      <span className="mr-1.5 font-[family-name:var(--font-sora)] text-[12px] font-bold uppercase tracking-[0.1em] text-[color:var(--color-home-muted)]">
-        Certifiés &amp; assurés
-      </span>
-      {CERTS.map(({ icon, label }) => (
-        <span
-          key={label}
-          className="inline-flex items-center gap-2 rounded-full border border-[color:var(--color-home-line)] bg-[color:var(--color-home-bg-2)] px-4 py-2 font-[family-name:var(--font-sora)] text-[13.5px] font-semibold text-[color:var(--color-home-ink)] [&_svg]:text-[color:var(--color-home-saf-dark)]"
-        >
-          {icon}
-          {label}
-        </span>
-      ))}
-    </Reveal>
-  );
-}
 
 /* ─── Composant principal Hero (v-hero-3) ─── */
 export function Hero() {
@@ -77,7 +50,7 @@ export function Hero() {
               <button
                 type="button"
                 onClick={openModal}
-                className="inline-flex items-center gap-2 rounded-[10px] bg-[color:var(--color-home-saf)] px-6 py-3.5 font-[family-name:var(--font-sora)] text-[15px] font-bold text-[color:var(--color-home-ink)] transition-opacity hover:opacity-90"
+                className="inline-flex items-center gap-2 rounded-[10px] border border-[color:var(--color-home-line)] bg-[color:var(--color-si-creme)] px-6 py-3.5 font-[family-name:var(--font-sora)] text-[15px] font-bold text-[color:var(--color-si-petrole)] shadow-[0_2px_10px_rgba(15,30,58,.06)] transition-colors hover:bg-white"
               >
                 Commencer mon devis
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
@@ -116,26 +89,33 @@ export function Hero() {
                 priority
                 className="h-[560px] w-full rounded-[32px] object-cover [clip-path:polygon(14%_0,100%_0,100%_100%,0_100%)] max-[880px]:[clip-path:none] max-[880px]:h-[340px]"
               />
-              {/* Tag count-up */}
+              {/* Encart confiance + count-up */}
               <Reveal direction="zoom" className="absolute bottom-12 -left-6">
-                <div className="flex flex-col rounded-[24px] border border-white/[0.08] bg-[color:var(--color-home-slate)] px-7 py-5 shadow-[0_8px_32px_rgba(15,30,58,.35)]">
-                  <span
-                    ref={yearsRef}
-                    className="font-[family-name:var(--font-sora)] text-[42px] font-extrabold leading-none text-[color:var(--color-home-saf)]"
-                  >
-                    {yearsValue}
+                <div className="flex flex-col rounded-[24px] bg-[#003d42] px-6 py-[18px] shadow-[0_10px_34px_rgba(15,30,58,.30)]">
+                  <span className="inline-flex items-center gap-1.5 font-[family-name:var(--font-sora)] text-[11px] font-bold uppercase tracking-[0.07em] text-white/85">
+                    <ShieldCheckIcon className="h-[13px] w-[13px]" aria-hidden />
+                    Certifiés &amp; assurés
                   </span>
-                  <em className="mt-1 block not-italic text-[13px] font-semibold text-white/80">
-                    ans en Indre-et-Loire
-                  </em>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span
+                      ref={yearsRef}
+                      className="font-[family-name:var(--font-sora)] text-[40px] font-extrabold leading-none text-[color:var(--color-home-saf)]"
+                    >
+                      {yearsValue}
+                    </span>
+                    <em className="not-italic text-[17px] font-bold text-white">ans</em>
+                  </div>
+                  <p className="mt-1 text-[12.5px] font-medium leading-[1.4] text-white/70">
+                    d&apos;expertise locale
+                    <br />
+                    depuis 1998
+                  </p>
                 </div>
               </Reveal>
             </div>
           </Reveal>
         </div>
 
-        {/* ── Strip certifications ── */}
-        <CertStrip />
       </div>
     </section>
   );
