@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useSyncExternalStore } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore } from "react";
 
 // Abonnement no-op utilisé pour le garde SSR via useSyncExternalStore
 // (évite setState dans useEffect, conforme React 19 lint).
@@ -29,20 +29,33 @@ export function SplashIntro() {
   const leave = enter * 0.42;                    // ~1.3s
   const hold  = enter + Math.max(0, pause);      // ~4.5s
 
+  // Décision « déjà vu cette session » figée au 1er passage réel : reste stable
+  // malgré le double-invoke de React Strict Mode (qui rejouerait sinon
+  // sessionStorage et masquerait le splash sans l'animer).
+  const seenBeforeRef = useRef<boolean | null>(null);
+
   useEffect(() => {
-    // Vérifie sessionStorage uniquement après montage
-    const seen = sessionStorage.getItem("si-splash-seen");
+    // Tant que `mounted` est false, le composant rend `null` : l'élément du
+    // splash n'existe pas encore dans le DOM. Sans cette garde (et sans `mounted`
+    // en dépendance), l'effet tournerait une seule fois sur un DOM vide, sortirait
+    // aussitôt et ne reposerait jamais le timer → splash figé sur le logo.
+    if (!mounted) return;
     const root = document.getElementById("si-splash-root");
     if (!root) return;
 
-    if (seen) {
-      // Déjà vu : cacher immédiatement
+    // Lu UNE seule fois par instance : l'avait-on déjà vu AVANT ce montage ?
+    if (seenBeforeRef.current === null) {
+      seenBeforeRef.current = sessionStorage.getItem("si-splash-seen") === "1";
+      sessionStorage.setItem("si-splash-seen", "1");
+    }
+
+    if (seenBeforeRef.current) {
+      // Déjà vu plus tôt dans la session : cacher immédiatement
       root.style.display = "none";
       return;
     }
 
-    // Marquer comme vu et lancer la séquence de sortie
-    sessionStorage.setItem("si-splash-seen", "1");
+    // Première visite : (re)lancer la séquence de sortie
     root.style.display = "";
 
     const reduce =
@@ -57,7 +70,7 @@ export function SplashIntro() {
     }, holdMs);
 
     return () => clearTimeout(timer);
-  }, [hold, leave]);
+  }, [mounted, hold, leave]);
 
   // Ne rien rendre côté serveur
   if (!mounted) return null;
