@@ -54,7 +54,7 @@ function QuestionnaireHeader() {
  * Le store Zustand persiste dans localStorage (`servicimmo-quote` v2) : une
  * reprise de session rend directement l'écran où l'utilisateur s'était arrêté.
  */
-export function QuestionnaireApp() {
+export function QuestionnaireApp({ embedded = false }: { embedded?: boolean } = {}) {
   // Garde anti-mismatch SSR : on ne rend l'écran concret qu'après la fin de
   // l'hydratation du store Zustand (persist middleware lit localStorage).
   // `useSyncExternalStore` évite les setState en useEffect (React 19 lint).
@@ -117,12 +117,27 @@ export function QuestionnaireApp() {
   }
 
   if (!mounted) {
-    return <div className="min-h-[80vh] bg-[var(--color-devis-cream)]" aria-hidden />;
+    return (
+      <div
+        className={
+          embedded
+            ? "h-full bg-[var(--color-devis-cream)]"
+            : "min-h-[80vh] bg-[var(--color-devis-cream)]"
+        }
+        aria-hidden
+      />
+    );
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--color-devis-cream)] font-sans text-[var(--color-devis-ink)]">
-      <QuestionnaireHeader />
+    <div
+      className={
+        embedded
+          ? "h-full bg-[var(--color-devis-cream)] font-sans text-[var(--color-devis-ink)]"
+          : "min-h-[100dvh] bg-[var(--color-devis-cream)] font-sans text-[var(--color-devis-ink)]"
+      }
+    >
+      {!embedded && <QuestionnaireHeader />}
       {currentScreen === "entry" ? (
         <EntryScreen
           selected={data.project_type ?? null}
