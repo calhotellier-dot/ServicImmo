@@ -217,6 +217,93 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────
+   Splash intro (SplashIntro.tsx) — variante tracedoors, fond crème
+   Préfixe si- pour éviter toute collision.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Layout & structure */
+.si-splash {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  --si-enter: 3.1s;
+  --si-teal: #00585f;
+  --si-door: #00585f;
+  --si-seam: #c6d800;
+}
+.si-splash__bg { position: absolute; inset: 0; z-index: 0; }
+.si-splash__logo {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(12px, 3vh, 26px);
+  will-change: transform, opacity;
+}
+.si-splash__house { width: clamp(110px, 17vw, 200px); height: auto; overflow: visible; }
+.si-splash__word {
+  display: flex; align-items: flex-start;
+  font-family: "Fredoka", system-ui, sans-serif; font-weight: 600;
+  font-size: clamp(32px, 5.95vw, 73px); line-height: 0.9; letter-spacing: -0.01em;
+  color: var(--si-teal);
+}
+.si-splash__word sup { font-size: 0.3em; margin-top: 0.15em; margin-left: 0.05em; opacity: 0.85; }
+
+/* Portes */
+.si-splash__door {
+  position: absolute; top: 0; bottom: 0; width: 50.5%; z-index: 3;
+  background: var(--si-door);
+}
+.si-splash__door--l { left: 0;  border-right: 3px solid var(--si-seam); }
+.si-splash__door--r { right: 0; border-left:  3px solid var(--si-seam); }
+
+/* Keyframes */
+@keyframes si-draw    { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
+@keyframes si-fill    { from { fill-opacity: 0 }      to { fill-opacity: 1 }      }
+@keyframes si-wipe    { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 0 0 0) } }
+@keyframes si-doorL   { from { transform: translateX(0) }    to { transform: translateX(-101%) } }
+@keyframes si-doorR   { from { transform: translateX(0) }    to { transform: translateX(101%) }  }
+
+/* Variante tracedoors */
+.si-splash.v-tracedoors .si-splash__door--l {
+  animation: si-doorL calc(var(--si-enter) * 0.36) cubic-bezier(0.76, 0, 0.24, 1) both
+    calc(var(--si-enter) * 0.05);
+}
+.si-splash.v-tracedoors .si-splash__door--r {
+  animation: si-doorR calc(var(--si-enter) * 0.36) cubic-bezier(0.76, 0, 0.24, 1) both
+    calc(var(--si-enter) * 0.05);
+}
+.si-splash.v-tracedoors .si-p {
+  stroke-dasharray: 1;
+  animation:
+    si-draw calc(var(--si-enter) * 0.5) ease both,
+    si-fill calc(var(--si-enter) * 0.28) ease-out both calc(var(--si-enter) * 0.42);
+}
+.si-splash.v-tracedoors .si-body    { animation-delay: calc(var(--si-enter) * 0.46), calc(var(--si-enter) * 0.86); }
+.si-splash.v-tracedoors .si-chimney { animation-delay: calc(var(--si-enter) * 0.56), calc(var(--si-enter) * 0.92); }
+.si-splash.v-tracedoors .si-arrow   { animation-delay: calc(var(--si-enter) * 0.66), calc(var(--si-enter) * 0.98); }
+.si-splash.v-tracedoors .si-splash__word {
+  animation: si-wipe calc(var(--si-enter) * 0.45) cubic-bezier(0.7, 0, 0.3, 1) both
+    calc(var(--si-enter) * 0.92);
+}
+
+/* Sortie (is-leaving ajouté en JS avant démontage React) */
+.si-splash.is-leaving {
+  opacity: 0;
+  transition: opacity calc(var(--si-leave, 0.7s)) ease;
+}
+.si-splash.is-leaving .si-splash__logo {
+  transform: translateY(-10px) scale(1.04);
+  transition: transform calc(var(--si-leave, 0.7s)) ease;
+}
+
+/* Accessibilité : prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .si-splash * { animation: none !important; }
+  .si-splash .si-p { stroke-dasharray: none !important; fill-opacity: 1 !important; }
+  .si-splash__word { clip-path: none !important; }
+  .si-splash__door { display: none !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
    Animations Home D3 (pin carte + dot "ouverture")
    ─────────────────────────────────────────────────────────────────── */
 @keyframes home-ping {

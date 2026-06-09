@@ -3,6 +3,7 @@ import { Sora, Inter, Fredoka } from "next/font/google";
 
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
+import { SplashIntro } from "@/components/marketing/SplashIntro";
 
 const sora = Sora({
   variable: "--font-sora",
@@ -34,6 +35,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
     <div
       className={`${sora.variable} ${inter.variable} ${fredoka.variable} font-[family-name:var(--font-inter)] text-[color:var(--color-home-ink)] [background:var(--color-home-bg)]`}
     >
+      <SplashIntro />
       <Header />
       <main className="min-h-[calc(100dvh-3.5rem)] flex-1">{children}</main>
       <Footer />
