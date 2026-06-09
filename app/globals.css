@@ -258,3 +258,19 @@
 .devis-reveal {
   animation: devis-reveal 0.28s ease-out both;
 }
+
+/* ─────────────────────────────────────────────────────────────────────
+   Marquee logos clients (v-references-2) — piste défilante CSS
+   ─────────────────────────────────────────────────────────────────── */
+@keyframes vr2scrollA {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.vr2-track-a {
+  animation: vr2scrollA 38s linear infinite;
+}
+
+.vr2-marquee:hover .vr2-track {
+  animation-play-state: paused;
+}
