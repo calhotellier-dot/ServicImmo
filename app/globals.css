@@ -166,6 +166,13 @@
   --color-home-muted-2: #4a5865;
 
   /* ────────────────────────────────────────────────────────────────────
+     Splash intro — couleurs crème, pétrole, lime
+     ──────────────────────────────────────────────────────────────────── */
+  --color-si-creme: #f4f1e8;
+  --color-si-petrole: #00585f;
+  --color-si-lime: #e6e900;
+
+  /* ────────────────────────────────────────────────────────────────────
      Devis V2 — palette "cream-lime-sage" (handoff Claude Design).
      Utilisée par components/questionnaire/*.
      ──────────────────────────────────────────────────────────────────── */
