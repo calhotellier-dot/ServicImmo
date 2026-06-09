@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { PhoneIcon, MenuIcon, XIcon } from "lucide-react";
 
+import { useQuoteModal } from "@/components/questionnaire/QuoteModalProvider";
+
 const NAV_LINKS: { label: string; href: string }[] = [
   { label: "Accueil", href: "/" },
   { label: "Diagnostics", href: "/services" },
@@ -22,6 +24,7 @@ const NAV_LINKS: { label: string; href: string }[] = [
  */
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { open: openModal } = useQuoteModal();
 
   return (
     <header className="sticky top-0 z-[900] border-b border-[color:var(--color-home-line)] bg-white/92 backdrop-blur-[10px] transition-shadow">
@@ -71,12 +74,13 @@ export function Header() {
             02 47 47 01 23
           </a>
 
-          <Link
-            href="/devis"
+          <button
+            type="button"
+            onClick={openModal}
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-[6px] bg-[color:var(--color-home-saf)] px-[22px] py-[13px] font-[family-name:var(--font-sora)] text-[14px] font-semibold text-[color:var(--color-home-slate)] transition-opacity hover:opacity-90"
           >
             Demander un devis
-          </Link>
+          </button>
 
           <button
             className="xl:hidden border-none bg-transparent p-1 text-[22px] text-[color:var(--color-home-ink)] cursor-pointer"

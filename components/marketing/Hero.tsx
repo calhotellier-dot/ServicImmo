@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRightIcon, PhoneIcon, ZapIcon, ClockIcon, MapPinIcon, AwardIcon, ShieldCheckIcon, BuildingIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Reveal } from "@/components/marketing/Reveal";
 import { useCountUp } from "@/hooks/useCountUp";
+import { useQuoteModal } from "@/components/questionnaire/QuoteModalProvider";
 
 /* ─── Sous-composant : bandeau certifications ─── */
 const CERTS = [
@@ -38,6 +38,7 @@ function CertStrip() {
 /* ─── Composant principal Hero (v-hero-3) ─── */
 export function Hero() {
   const { ref: yearsRef, value: yearsValue } = useCountUp(28);
+  const { open: openModal } = useQuoteModal();
 
   return (
     <section className="relative overflow-hidden bg-[color:var(--color-home-bg)]">
@@ -73,13 +74,14 @@ export function Hero() {
 
             {/* CTA */}
             <div className="mb-6 flex flex-wrap items-center gap-[18px]">
-              <Link
-                href="/devis"
+              <button
+                type="button"
+                onClick={openModal}
                 className="inline-flex items-center gap-2 rounded-[10px] bg-[color:var(--color-home-saf)] px-6 py-3.5 font-[family-name:var(--font-sora)] text-[15px] font-bold text-[color:var(--color-home-ink)] transition-opacity hover:opacity-90"
               >
                 Commencer mon devis
                 <ArrowRightIcon className="h-4 w-4" aria-hidden />
-              </Link>
+              </button>
               <a
                 href="tel:0247470123"
                 className="inline-flex items-center gap-2.5 font-[family-name:var(--font-sora)] text-[17px] font-bold text-[color:var(--color-home-ink)] [&_svg]:text-[color:var(--color-home-saf-dark)]"
