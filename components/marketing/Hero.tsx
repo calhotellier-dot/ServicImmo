@@ -44,7 +44,7 @@ export function Hero() {
       {/* Deco blob */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-[-12%] right-[-6%] z-0 h-[62%] w-[46%] rounded-[48%_52%_60%_40%/55%_48%_52%_45%] bg-[color:var(--color-home-saf-bg)] opacity-70 blur-[2px)]"
+        className="pointer-events-none absolute top-[-12%] right-[-6%] z-0 h-[62%] w-[46%] rounded-[48%_52%_60%_40%/55%_48%_52%_45%] bg-[color:var(--color-home-saf-bg)] opacity-70 blur-[2px]"
       />
 
       <div className="relative z-[1] mx-auto max-w-[1200px] px-6 pt-10 pb-16 md:px-12">
