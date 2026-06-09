@@ -17,7 +17,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
         {...rest}
         className={[
           "w-full rounded-[10px] border border-[var(--color-devis-line)] bg-white",
-          "px-3.5 py-3 text-[15px] text-[var(--color-devis-ink)]",
+          "px-3.5 py-2.5 text-[15px] text-[var(--color-devis-ink)]",
           suffix ? "pr-10" : "",
           "outline-none transition-colors",
           "focus:border-[var(--branch-fg)] focus-visible:ring-2 focus-visible:ring-[var(--branch-fg)]/30",

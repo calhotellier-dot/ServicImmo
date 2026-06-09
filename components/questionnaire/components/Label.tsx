@@ -8,7 +8,7 @@ type LabelProps = {
 
 export function Label({ htmlFor, children, help }: LabelProps) {
   return (
-    <div className="mb-2 flex flex-col gap-0.5">
+    <div className="mb-1.5 flex flex-col gap-0.5">
       <label
         htmlFor={htmlFor}
         className="text-sm font-medium text-[var(--color-devis-ink)]"

@@ -56,7 +56,7 @@ export function QuestionnaireModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative flex h-[min(680px,92vh)] w-[min(1080px,96vw)] overflow-hidden rounded-[26px] bg-[var(--color-devis-cream)] shadow-[0_40px_100px_rgba(15,30,58,.4)]">
+      <div className="relative flex h-auto max-h-[94vh] min-h-[460px] w-[min(1080px,96vw)] overflow-hidden rounded-[26px] bg-[var(--color-devis-cream)] shadow-[0_40px_100px_rgba(15,30,58,.4)]">
 
         {/* Bouton fermeture */}
         <button

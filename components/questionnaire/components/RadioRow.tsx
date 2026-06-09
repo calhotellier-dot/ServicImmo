@@ -43,7 +43,7 @@ export function RadioRow<T extends string>({
             aria-checked={selected}
             onClick={() => onChange(opt.value)}
             className={[
-              "rounded-[10px] border px-2.5 py-3 text-center text-[13px] transition-colors",
+              "rounded-[10px] border px-2.5 py-2.5 text-center text-[13px] transition-colors",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--branch-fg)]/40",
               selected
                 ? "border-[var(--branch-fg)] bg-[var(--branch-bg)] font-medium text-[var(--branch-dark)]"

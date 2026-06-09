@@ -48,7 +48,7 @@ export function Accordion({
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={panelId}
-        className="flex w-full items-center gap-3 px-4 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--branch-fg)]/40"
+        className="flex w-full items-center gap-3 px-4 py-3 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--branch-fg)]/40"
       >
         <span
           aria-hidden
@@ -84,7 +84,7 @@ export function Accordion({
           id={panelId}
           role="region"
           aria-labelledby={headerId}
-          className="border-t border-[var(--color-devis-line)] px-5 pt-1 pb-6"
+          className="border-t border-[var(--color-devis-line)] px-5 pt-1 pb-4"
         >
           {children}
         </div>
