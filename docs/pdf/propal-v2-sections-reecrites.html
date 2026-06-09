@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Propal v2 · Sections réécrites</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  @page {
+    size: A4;
+    margin: 22mm 20mm 22mm 20mm;
+    @bottom-left { content: 'Document confidentiel'; font-family: Inter, sans-serif; font-size: 9pt; color: #888; }
+    @bottom-right { content: 'Page ' counter(page) ' / ' counter(pages); font-family: Inter, sans-serif; font-size: 9pt; color: #888; }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1a1a1a;
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+
+  h1 { font-size: 24pt; font-weight: 700; color: #1a1a1a; margin: 0 0 8pt; line-height: 1.15; page-break-after: avoid; }
+  h1:first-child { margin-top: 0; }
+  h2 { font-size: 14pt; font-weight: 700; color: #1a1a1a; margin: 22pt 0 6pt; padding-top: 8pt; border-top: 1.5pt solid #6d28d9; page-break-after: avoid; page-break-before: auto; }
+  h3 { font-size: 11.5pt; font-weight: 600; color: #4c1d95; margin: 14pt 0 4pt; page-break-after: avoid; }
+  h4 { font-size: 10.5pt; font-weight: 600; color: #1a1a1a; margin: 10pt 0 3pt; page-break-after: avoid; }
+
+  /* keep heading + following block together */
+  h2 + p, h2 + ul, h2 + ol, h2 + table, h2 + blockquote { page-break-before: avoid; }
+  h3 + p, h3 + ul, h3 + ol, h3 + table, h3 + blockquote { page-break-before: avoid; }
+
+  p { margin: 0 0 8pt; orphans: 3; widows: 3; }
+  ul, ol { margin: 6pt 0 10pt; padding-left: 18pt; page-break-inside: avoid; }
+  li { margin-bottom: 3pt; }
+  table, blockquote { page-break-inside: avoid; }
+
+  blockquote {
+    margin: 10pt 0;
+    padding: 10pt 14pt;
+    background: #f5f3ff;
+    border-left: 3pt solid #6d28d9;
+    color: #1a1a1a;
+    font-size: 10pt;
+  }
+  blockquote p:first-child strong:first-child { color: #6d28d9; letter-spacing: 0.04em; font-size: 9pt; text-transform: uppercase; }
+
+  code { background: #f5f3ff; padding: 1pt 4pt; border-radius: 2pt; font-size: 9.5pt; color: #4c1d95; }
+  pre { background: #f5f3ff; padding: 8pt; border-radius: 3pt; font-size: 9pt; overflow-x: auto; }
+  pre code { background: none; padding: 0; color: #1a1a1a; }
+
+  table { border-collapse: collapse; width: 100%; margin: 8pt 0 14pt; font-size: 9.5pt; }
+  th { background: #4c1d95; color: white; text-align: left; padding: 6pt 8pt; font-weight: 600; font-size: 9pt; letter-spacing: 0.02em; }
+  td { padding: 5pt 8pt; border-bottom: 0.5pt solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  hr { border: none; border-top: 1pt solid #e5e7eb; margin: 16pt 0; }
+
+  a { color: #6d28d9; text-decoration: none; }
+
+  .header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 0.5pt solid #e5e7eb; padding-bottom: 6pt; margin-bottom: 14pt;
+    font-size: 9pt;
+  }
+  .header .brand { color: #6d28d9; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .header .ref { color: #6b7280; }
+</style>
+</head>
+<body>
+<div class="header">
+  <span class="brand">Propul'SEO</span>
+  <span class="ref">Propal v2 · Sections réécrites</span>
+</div>
+<h1>Propal v2 — Sections réécrites · Questionnaire &amp; Plateforme métier</h1>
+<blockquote>
+<p><strong>Pour Étienne</strong> : ces sections remplacent les §4, §4b, §5, §5b, §5c (nouvelle), §6 du PDF actuel.
+Conserver le formatage visuel du PDF (cartouches violets, numérotation des sections, blocs &quot;ce qui change concrètement&quot;, etc.).
+Phases 3 et 4 inchangées. Tarification §11 à arbitrer selon périmètre étendu Phase 2.</p>
+</blockquote>
+<hr>
+<h2>§4 · Phase 1 · Site internet &amp; questionnaire intelligent</h2>
+<h3>Objectif</h3>
+<p><em>(INCHANGÉ vs propal v1)</em> Créer un site qui fait le tri pour vous. Les appels deviennent qualifiés, les demandes structurées, et chaque contact entrant arrive avec les bonnes informations dès la première interaction.</p>
+<h3>Structure du site · 5 pages principales</h3>
+<p><em>(INCHANGÉ vs propal v1 — recopier la liste : Accueil, Diagnostics immobiliers, Vente / Location, Professionnels &amp; copropriétés, Contact / Demande de devis)</em></p>
+<h3>Sous-pages SEO · Référencement local</h3>
+<p><em>(INCHANGÉ vs propal v1 — recopier la liste : DPE Tours, Diagnostic immobilier Tours, Amiante Tours, Diagnostic immobilier Amboise, Diagnostic immobilier Chinon, Diagnostic immobilier Joué-lès-Tours, DTA Amiante avant travaux, Diagnostic plomb Termites, DPE tertiaire, + pages satellites évolutives)</em></p>
+<hr>
+<h2>§4b · Le questionnaire intelligent — Cœur de la phase 1 <em>(RÉÉCRITURE COMPLÈTE)</em></h2>
+<h3>Un parcours intelligent qui s&#39;adapte à chaque projet</h3>
+<p>Pas de questions inutiles. Pas de formulaires interminables. Le questionnaire ne demande que ce qui sert à votre métier.</p>
+<h3>Comment ça fonctionne concrètement</h3>
+<p><strong>1 · Entrée par projet</strong>
+Vente, location, travaux, diagnostic périodique. Le parcours se réorganise instantanément selon le choix — un client en location ne verra pas les questions vente.</p>
+<p><strong>2 · Branches automatiques</strong>
+Selon le type de bien (maison, appartement, local pro, immeuble) et la localisation, seules les questions pertinentes apparaissent. Pas de termites en zone non concernée, pas de DPE tertiaire pour un particulier.</p>
+<p><strong>3 · Prix calculé en temps réel</strong>
+Le client voit son devis estimatif s&#39;affiner pendant la saisie. Aucune surprise au moment du contact.</p>
+<blockquote>
+<p><strong>CE QUI CHANGE CONCRÈTEMENT POUR VOUS</strong></p>
+<p>Un prospect vous contacte ? Vous avez déjà en main : type de projet, caractéristiques du bien, diagnostics pré-identifiés, créneaux de RDV.</p>
+<p><strong>Votre premier appel n&#39;est plus un appel de qualification — c&#39;est un appel de closing.</strong></p>
+</blockquote>
+<h3>Automatisations incluses dans la phase 1</h3>
+<p><em>(INCHANGÉ vs propal v1)</em></p>
+<ul>
+<li>Email de confirmation envoyé au prospect dès la soumission du questionnaire</li>
+<li>Notification interne immédiate avec toutes les données dans votre boîte mail</li>
+<li>SMS automatique de rappel envoyé au client 24h avant le rendez-vous</li>
+<li>Demande d&#39;avis Google envoyée automatiquement après la mission</li>
+<li>Export automatique des données vers la plateforme métier (phase 2)</li>
+</ul>
+<h3>Livrables de la phase 1</h3>
+<p><em>(INCHANGÉ vs propal v1 — recopier la liste : Site internet complet responsive, Questionnaire intelligent intégré testé et fonctionnel, 6 articles SEO optimisés, 10+ sous-pages de référencement local, Back-office simple, Formation 1 heure)</em></p>
+<hr>
+<h2>§5 · Phase 2 · Plateforme métier Servicimmo <em>(SECTION ÉTENDUE)</em></h2>
+<h3>Objectif</h3>
+<p>Remplacer le papier, Excel et les échanges par mail/téléphone par une interface unique, pensée pour votre métier de diagnostiqueur. Du premier contact à la clôture comptable — tout passe par la plateforme.</p>
+<h3>La plateforme en 3 grandes zones fonctionnelles</h3>
+<p>Nous avons regroupé les modules en 3 zones de travail, chacune correspondant à un moment de votre journée.</p>
+<h4>Zone 1 · PILOTER</h4>
+<p><em>La vue d&#39;ensemble. Où vous démarrez votre journée pour savoir ce qui compte aujourd&#39;hui.</em></p>
+<ul>
+<li><strong>Tableau de bord</strong> — dossiers en cours, RDV du jour, alertes, CA estimé en temps réel</li>
+<li><strong>Statistiques &amp; pilotage avancé</strong> — dossiers traités, taux de conversion, activité par technicien, CA mensuel, exports CSV pour votre comptable</li>
+</ul>
+<h4>Zone 2 · TRAITER</h4>
+<p><em>Le cœur opérationnel. Où vos dossiers vivent, du premier contact à la clôture.</em></p>
+<ul>
+<li><strong>Gestion des dossiers</strong> — liste filtrable par statut, recherche rapide sur l&#39;ensemble des dossiers</li>
+<li><strong>Fiche dossier</strong> — élément central — contacts, bien, diagnostics, devis, fichiers au même endroit</li>
+<li><strong>Gestion commerciale</strong> — devis, factures immuables, relances automatisées, paiements Stripe + manuels</li>
+<li><strong>Agenda &amp; planification</strong> — planning par technicien, assignation en 2 clics, SMS de rappel automatiques</li>
+<li><strong>Demandes de documents</strong> ⭐ <em>— bonus inclus</em>
+En un clic, le cabinet envoie au client une demande de documents personnalisée. Le client reçoit un lien sécurisé sans création de compte, dépose ses pièces, le cabinet est notifié. Fini les relances par mail.</li>
+</ul>
+<h4>Zone 3 · RELATIONS</h4>
+<p><em>Votre base de contacts. Clients, prescripteurs, partenaires — tous reliés à leur historique.</em></p>
+<ul>
+<li><strong>Gestion des tiers</strong> — base centralisée : clients, agences, syndics, prescripteurs, notaires</li>
+<li><strong>Portail client / prescripteur sécurisé</strong> ⭐ <em>— bonus inclus</em>
+Vos clients et prescripteurs accèdent à leurs devis, factures et documents via un lien sécurisé. Pas de mot de passe à gérer, pas de friction.</li>
+</ul>
+<hr>
+<h2>§5c · Conformité &amp; paramétrage <em>(NOUVELLE SECTION — bonus valorisés)</em></h2>
+<p>La plateforme couvre aussi vos obligations légales et vous laisse la main sur sa configuration.</p>
+<ul>
+<li><strong>Export FEC</strong> — fichier comptable légal généré en un clic, conforme à l&#39;obligation fiscale (article L.47 A du Livre des procédures fiscales). Votre comptable l&#39;importe directement dans son logiciel.</li>
+<li><strong>Grille tarifaire éditable</strong> — modifiez vos prix en autonomie, sans nous solliciter. Tarifs par diagnostic, par contexte (vente/location), par type de bien.</li>
+<li><strong>Règles de majoration éditables</strong> — frais de déplacement, urgence, chauffage collectif, pack multi-diagnostics. Configurables sans toucher au code.</li>
+<li><strong>Multi-utilisateurs avec rôles</strong> — comptes admin, diagnostiqueur, assistant. Permissions granulaires par fonction.</li>
+<li><strong>Branding cabinet</strong> — votre logo, vos couleurs, vos coordonnées sur tous les supports (devis, factures, emails clients).</li>
+</ul>
+<blockquote>
+<p><strong>VALEUR AJOUTÉE</strong></p>
+<p>Vous êtes autonome sur les paramètres qui changent souvent (prix, règles, équipe, branding). Aucune dépendance à Propul&#39;SEO pour ces ajustements quotidiens.</p>
+</blockquote>
+<hr>
+<h2>§5b · Fiche dossier — L&#39;élément central</h2>
+<p><em>(INCHANGÉ vs propal v1 — recopier la section telle quelle, avec les 4 blocs : Contacts, Projet &amp; Bien, Diagnostics &amp; Technique, Organisation &amp; Fichiers, ainsi que l&#39;encart &quot;Résultat après la phase 2&quot;)</em></p>
+<hr>
+<h2>§6 · Fonctionnement complet d&#39;un dossier</h2>
+<p><em>(INCHANGÉ vs propal v1 — recopier la section telle quelle, les 9 étapes : Demande reçue → Création automatique → Qualification → Devis → Validation → Planification RDV → Intervention → Documents &amp; rapports → Clôture &amp; avis Google)</em></p>
+
+</body>
+</html>

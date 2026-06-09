@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-fraunces);
+
+  /* ────────────────────────────────────────────────────────────────────
+     Home D3 — palette "classic" (Anis + Navy), handoff Claude Design.
+     Utilisée par components/marketing/*.
+     ──────────────────────────────────────────────────────────────────── */
+  --color-home-ink: #0f1e3a;
+  --color-home-slate: #1e3a5f;
+  --color-home-slate-2: #2a4f7a;
+  --color-home-saf: #a4c425;
+  --color-home-saf-soft: #e5efba;
+  --color-home-saf-dark: #6a8a10;
+  --color-home-saf-bg: #f3f7e0;
+  --color-home-bg: #f5f7f8;
+  --color-home-bg-2: #eef2f4;
+  --color-home-line: #dde4e8;
+  --color-home-line-soft: #e8edef;
+  --color-home-muted: #7a8691;
+  --color-home-muted-2: #4a5865;
+
+  /* ────────────────────────────────────────────────────────────────────
+     Devis V2 — palette "cream-lime-sage" (handoff Claude Design).
+     Utilisée par components/questionnaire/*.
+     ──────────────────────────────────────────────────────────────────── */
+  --color-devis-cream: #fcfaef;
+  --color-devis-ink: #1f2a14;
+  --color-devis-line: #dfe4c8;
+  --color-devis-muted: #606a50;
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   Branch colors (5 bifurcations du parcours devis) — déclarées en
+   `:root` plutôt qu'en `@theme` car elles ne sont consommées qu'à
+   travers l'indirection `var(--branch-*)` (injectée via getBranchVars).
+   Tailwind v4 n'émet les tokens `@theme inline` que s'ils sont référencés
+   par un utilitaire scanné — ce qui n'est pas le cas ici.
+   ──────────────────────────────────────────────────────────────────── */
+:root {
+  --color-branch-sale-bg: #eaf5c7;
+  --color-branch-sale-fg: #7a9b1c;
+  --color-branch-sale-dark: #546b10;
+  --color-branch-rental-bg: #d8e9d1;
+  --color-branch-rental-fg: #5a8256;
+  --color-branch-rental-dark: #365233;
+  --color-branch-works-bg: #f0d9bf;
+  --color-branch-works-fg: #b36a3a;
+  --color-branch-works-dark: #733e1c;
+  --color-branch-coownership-bg: #d4e8e6;
+  --color-branch-coownership-fg: #2a7570;
+  --color-branch-coownership-dark: #104a48;
+  --color-branch-other-bg: #e4e0cc;
+  --color-branch-other-fg: #6a6452;
+  --color-branch-other-dark: #3a3628;
+}
+
+@layer base {
+  * {
+    @apply border-[color:var(--border)] outline-[color:var(--ring)]/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Animations Home D3 (pin carte + dot "ouverture")
+   ─────────────────────────────────────────────────────────────────── */
+@keyframes home-ping {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px var(--color-home-saf-dark),
+      0 0 0 0 rgba(164, 196, 37, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--color-home-saf-dark),
+      0 0 0 12px rgba(164, 196, 37, 0);
+  }
+}
+@keyframes home-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Progressive disclosure — accordéons qui apparaissent dans le filling.
+   ─────────────────────────────────────────────────────────────────── */
+@keyframes devis-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.devis-reveal {
+  animation: devis-reveal 0.28s ease-out both;
+}

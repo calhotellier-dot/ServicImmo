@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Changements propal Servicimmo · pour Étienne</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  @page {
+    size: A4;
+    margin: 22mm 20mm 22mm 20mm;
+    @bottom-left { content: 'Document confidentiel'; font-family: Inter, sans-serif; font-size: 9pt; color: #888; }
+    @bottom-right { content: 'Page ' counter(page) ' / ' counter(pages); font-family: Inter, sans-serif; font-size: 9pt; color: #888; }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1a1a1a;
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+
+  h1 { font-size: 24pt; font-weight: 700; color: #1a1a1a; margin: 0 0 8pt; line-height: 1.15; page-break-after: avoid; }
+  h1:first-child { margin-top: 0; }
+  h2 { font-size: 14pt; font-weight: 700; color: #1a1a1a; margin: 22pt 0 6pt; padding-top: 8pt; border-top: 1.5pt solid #6d28d9; page-break-after: avoid; page-break-before: auto; }
+  h3 { font-size: 11.5pt; font-weight: 600; color: #4c1d95; margin: 14pt 0 4pt; page-break-after: avoid; }
+  h4 { font-size: 10.5pt; font-weight: 600; color: #1a1a1a; margin: 10pt 0 3pt; page-break-after: avoid; }
+
+  /* keep heading + following block together */
+  h2 + p, h2 + ul, h2 + ol, h2 + table, h2 + blockquote { page-break-before: avoid; }
+  h3 + p, h3 + ul, h3 + ol, h3 + table, h3 + blockquote { page-break-before: avoid; }
+
+  p { margin: 0 0 8pt; orphans: 3; widows: 3; }
+  ul, ol { margin: 6pt 0 10pt; padding-left: 18pt; page-break-inside: avoid; }
+  li { margin-bottom: 3pt; }
+  table, blockquote { page-break-inside: avoid; }
+
+  blockquote {
+    margin: 10pt 0;
+    padding: 10pt 14pt;
+    background: #f5f3ff;
+    border-left: 3pt solid #6d28d9;
+    color: #1a1a1a;
+    font-size: 10pt;
+  }
+  blockquote p:first-child strong:first-child { color: #6d28d9; letter-spacing: 0.04em; font-size: 9pt; text-transform: uppercase; }
+
+  code { background: #f5f3ff; padding: 1pt 4pt; border-radius: 2pt; font-size: 9.5pt; color: #4c1d95; }
+  pre { background: #f5f3ff; padding: 8pt; border-radius: 3pt; font-size: 9pt; overflow-x: auto; }
+  pre code { background: none; padding: 0; color: #1a1a1a; }
+
+  table { border-collapse: collapse; width: 100%; margin: 8pt 0 14pt; font-size: 9.5pt; }
+  th { background: #4c1d95; color: white; text-align: left; padding: 6pt 8pt; font-weight: 600; font-size: 9pt; letter-spacing: 0.02em; }
+  td { padding: 5pt 8pt; border-bottom: 0.5pt solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  hr { border: none; border-top: 1pt solid #e5e7eb; margin: 16pt 0; }
+
+  a { color: #6d28d9; text-decoration: none; }
+
+  .header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 0.5pt solid #e5e7eb; padding-bottom: 6pt; margin-bottom: 14pt;
+    font-size: 9pt;
+  }
+  .header .brand { color: #6d28d9; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .header .ref { color: #6b7280; }
+</style>
+</head>
+<body>
+<div class="header">
+  <span class="brand">Propul'SEO</span>
+  <span class="ref">Changements propal Servicimmo · pour Étienne</span>
+</div>
+<h1>Changements propal Servicimmo — pour Étienne</h1>
+<blockquote>
+<p><strong>De</strong> : Lyes
+<strong>Date</strong> : 26 avril 2026
+<strong>Objet</strong> : récap des modifs apportées à la propal v1 (PDF du 24/04) après alignement avec le code livré.
+<strong>Pourquoi maintenant</strong> : la propal n&#39;est pas encore signée. On peut tout réviser avant envoi à Fanny et Jacques-Alexandre.</p>
+</blockquote>
+<hr>
+<h2>TL;DR</h2>
+<p>J&#39;ai retravaillé les sections <strong>Phase 1 questionnaire</strong> et <strong>Phase 2 plateforme</strong> parce qu&#39;elles divergeaient du code que j&#39;ai livré ces dernières semaines. <strong>Phases 3 et 4 (Impartial + France Carottage) intactes</strong>, validées avec le client.</p>
+<p>Résultat : un PDF v2 de 18 pages dispo dans <code>docs/pdf/Proposition_Servicimmo_PropulSEO_v2.pdf</code> que tu peux soit envoyer tel quel, soit reprendre dans ton outil de mise en page.</p>
+<hr>
+<h2>Vue d&#39;ensemble</h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Action</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>§4b · Questionnaire</td>
+<td>Réécrit</td>
+<td>gros</td>
+</tr>
+<tr>
+<td>§5 · Plateforme zones</td>
+<td>Étendue</td>
+<td>gros</td>
+</tr>
+<tr>
+<td>§5b · Fiche dossier</td>
+<td>Réécrit</td>
+<td>moyen</td>
+</tr>
+<tr>
+<td>§5c · Conformité &amp; paramétrage</td>
+<td><strong>Nouvelle section</strong></td>
+<td>gros</td>
+</tr>
+<tr>
+<td>§5d · Le socle métier</td>
+<td><strong>Nouvelle section</strong></td>
+<td>gros</td>
+</tr>
+<tr>
+<td>§11 · Tarification</td>
+<td>Lignes mises à jour</td>
+<td>moyen</td>
+</tr>
+<tr>
+<td>Tonalité</td>
+<td>Tirets cadratins retirés en prose</td>
+<td>léger</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Détail des changements</h2>
+<h3>§4b · Questionnaire (RÉÉCRIT)</h3>
+<p><strong>Avant</strong> : 6 étapes linéaires fixes (Type projet → Type bien → Caractéristiques → Localisation → Diagnostics → Coordonnées).</p>
+<p><strong>Après</strong> : 3 piliers d&#39;un parcours adaptatif :</p>
+<ol>
+<li><strong>Entrée par projet</strong> qui réorganise tout</li>
+<li><strong>Branches automatiques</strong> selon bien et localisation</li>
+<li><strong>Prix calculé en temps réel</strong> pendant la saisie</li>
+</ol>
+<p><strong>Pourquoi</strong> : le code livre un parcours à branches dynamiques (4 écrans, pas 6 étapes fixes). Plus court, plus pertinent par client, meilleur taux de complétion. Argument commercial gardé : &quot;votre premier appel n&#39;est plus un appel de qualification, c&#39;est un appel de closing&quot;.</p>
+<p><strong>Si Servicimmo demande &quot;où sont passées les 6 étapes ?&quot;</strong> → script de réponse :</p>
+<blockquote>
+<p>&quot;On a affiné le parcours en travaillant sur le moteur de règles. Au lieu de 6 étapes fixes pour tout le monde, le questionnaire s&#39;adapte au projet. Vos clients vente n&#39;auront pas les questions location, et inversement. C&#39;est plus court, plus précis, et ça augmente le taux de complétion.&quot;</p>
+</blockquote>
+<hr>
+<h3>§5 · Plateforme — zones étendues</h3>
+<p><strong>Modules ajoutés vs propal v1</strong> :</p>
+<ul>
+<li><strong>Demandes de documents</strong> (zone Traiter) — portail magic link, le client dépose ses pièces sans créer de compte</li>
+<li><strong>Portail client / prescripteur sécurisé</strong> (zone Relations) — accès devis/factures/docs via lien sécurisé</li>
+<li><strong>Statistiques avancées</strong> (zone Piloter) — CA mensuel, conversion, activité par technicien, exports CSV (avant : &quot;stats&quot; générique)</li>
+</ul>
+<p><strong>Pourquoi</strong> : le code livre 9 modules au lieu des 7 vendus en v1. Ces 2 modules ajoutés sont du gros travail déjà fait, à valoriser.</p>
+<hr>
+<h3>§5b · Fiche dossier (RÉÉCRIT)</h3>
+<p><strong>Avant</strong> : &quot;Fiche dossier · L&#39;élément central&quot; — listing des 4 blocs (contacts, projet, diagnostics, organisation).</p>
+<p><strong>Après</strong> : &quot;Fiche dossier · Parité fiche papier&quot; — narratif autour de 3 idées :</p>
+<ol>
+<li><strong>On reproduit fidèlement votre fiche papier actuelle</strong> — vos équipes ne réapprennent pas leur métier</li>
+<li><strong>Une saisie guidée pas-à-pas</strong> — auto-complétion adresse (BAN), suggestions diagnostiques, sauvegarde automatique</li>
+<li><strong>Tout converge sur la fiche</strong> — le système entier s&#39;alimente de cette saisie</li>
+</ol>
+<p><strong>Pourquoi</strong> : le code livre une création de dossier qui calque exactement la fiche papier que Fanny utilise au cabinet (le dernier gros chantier que j&#39;ai fait). Argument terrain massif jamais valorisé en v1.</p>
+<p><strong>Note tonalité</strong> : j&#39;ai retiré le mot &quot;wizard&quot; partout, remplacé par &quot;saisie guidée&quot; / &quot;création de dossier&quot; / &quot;parcours&quot;. Trop technique pour des dirigeants de PME.</p>
+<hr>
+<h3>§5c · Conformité &amp; paramétrage (NOUVELLE SECTION)</h3>
+<p>5 livrables qui n&#39;étaient pas du tout dans la v1 :</p>
+<ul>
+<li><strong>Export FEC</strong> — fichier comptable légal, conforme article L.47 A</li>
+<li><strong>Grille tarifaire éditable</strong> — autonomie sur les prix</li>
+<li><strong>Règles de majoration éditables</strong> — déplacement, urgence, chauffage collectif, etc.</li>
+<li><strong>Multi-utilisateurs avec rôles</strong> — admin / diagnostiqueur / assistant</li>
+<li><strong>Branding cabinet</strong> — logo, couleurs, coordonnées sur tous les supports</li>
+</ul>
+<p><strong>Pourquoi</strong> : tout ça existe dans le code (BDD prête, UI en finition). Bonus stratégique à valoriser, surtout l&#39;export FEC qui est une obligation légale.</p>
+<hr>
+<h3>§5d · Le socle métier (NOUVELLE SECTION)</h3>
+<p>3 piliers techniques sous-vendus dans la v1 :</p>
+<ol>
+<li><strong>Moteur de règles diagnostics</strong> — calcule auto les diagnostics obligatoires selon vente/loc, type bien, année construction, localisation</li>
+<li><strong>Moteur de tarification modulaire</strong> — grille × règles de majoration, devis transparents et auditables</li>
+<li><strong>Conformité légale intégrée</strong> — devis/factures immuables, FEC, hébergement EU, RGPD by design</li>
+</ol>
+<p><strong>Pourquoi</strong> : la propal v1 vendait l&#39;écran. La v2 vend ce qui est en dessous : un socle technique blindé qui crée de la valeur long terme. C&#39;est aussi ce qui justifie l&#39;écart de prix face à un dev freelance.</p>
+<hr>
+<h3>§11 · Tarification</h3>
+<p>Lignes Phase 1 et Phase 2 mises à jour pour refléter le nouveau périmètre :</p>
+<p><strong>Phase 1</strong> :</p>
+<ul>
+<li>Remplacement de &quot;Questionnaire 6 étapes&quot; par &quot;Questionnaire intelligent à parcours adaptatif&quot;</li>
+</ul>
+<p><strong>Phase 2</strong> :</p>
+<ul>
+<li>Nouvelle ligne &quot;Zone Traiter — gestion dossiers, fiche dossier, commercial, agenda, <strong>demandes docs</strong>&quot;</li>
+<li>Nouvelle ligne &quot;Zone Relations — base centralisée + <strong>portail client/prescripteur sécurisé</strong>&quot;</li>
+<li>Nouvelle ligne &quot;<strong>Conformité &amp; paramétrage</strong> — export FEC, grille &amp; règles éditables, multi-utilisateurs&quot;</li>
+</ul>
+<p><strong>Montants à arbitrer entre nous</strong> : la plateforme livrée contient environ 30 % de modules en plus que la v1 (FEC, portail client, demandes docs, paramétrage admin). Deux options :</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Effet</th>
+<th>Risque</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Ajuster Phase 2 à la hausse</strong></td>
+<td>Reflète la valeur livrée</td>
+<td>Re-négo, perte de momentum</td>
+</tr>
+<tr>
+<td><strong>Vendre les bonus comme &quot;offerts&quot;</strong></td>
+<td>Effet wow, signature accélérée</td>
+<td>Sous-valorisation du travail</td>
+</tr>
+</tbody></table>
+<p>Ma reco : <strong>option 2</strong> (offert). Effet wow vaut l&#39;écart de marge, et ça crée une dette d&#39;image positive si on doit upseller en Phase 3-4.</p>
+<hr>
+<h3>Tonalité globale</h3>
+<p>J&#39;ai supprimé tous les <strong>tirets cadratins (—)</strong> en milieu de phrase. Ça commence à faire &quot;rédigé par IA&quot; sur les propals, et ça nuit à la crédibilité.</p>
+<p>Remplacés par : virgule (juxtaposition), point (séparation phrases) ou deux-points (listes &quot;Terme : description&quot;). Les tirets dans les titres / structures graphiques sont conservés.</p>
+<hr>
+<h2>Ce qui n&#39;a PAS changé</h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>§1 Contexte &amp; vision</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§2 Objectifs stratégiques</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§3 Architecture globale</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§4 Structure du site et SEO</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§6 Fonctionnement complet d&#39;un dossier</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§7 Phase 3 Impartial / DS8</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§8 Phase 4 France Carottage</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§9 Timeline</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§10 Méthodologie</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§12 Conclusion</td>
+<td>inchangée</td>
+</tr>
+<tr>
+<td>§13 Bon pour accord</td>
+<td>inchangée</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Livrables disponibles</h2>
+<ul>
+<li><strong>PDF complet v2</strong> : <code>docs/pdf/Proposition_Servicimmo_PropulSEO_v2.pdf</code> (18 pages)</li>
+<li><strong>Sections texte autonomes</strong> (si tu préfères piocher) : <code>docs/propal-v2-questionnaire-plateforme.md</code></li>
+<li><strong>Audit interne</strong> (mémo) : <code>docs/audit-interne-propal.md</code></li>
+</ul>
+<hr>
+<p>À toi.</p>
+
+</body>
+</html>

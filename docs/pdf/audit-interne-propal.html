@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Audit interne · Propal Servicimmo v1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  @page {
+    size: A4;
+    margin: 22mm 20mm 22mm 20mm;
+    @bottom-left { content: 'Document confidentiel'; font-family: Inter, sans-serif; font-size: 9pt; color: #888; }
+    @bottom-right { content: 'Page ' counter(page) ' / ' counter(pages); font-family: Inter, sans-serif; font-size: 9pt; color: #888; }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1a1a1a;
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+
+  h1 { font-size: 24pt; font-weight: 700; color: #1a1a1a; margin: 0 0 8pt; line-height: 1.15; page-break-after: avoid; }
+  h1:first-child { margin-top: 0; }
+  h2 { font-size: 14pt; font-weight: 700; color: #1a1a1a; margin: 22pt 0 6pt; padding-top: 8pt; border-top: 1.5pt solid #6d28d9; page-break-after: avoid; page-break-before: auto; }
+  h3 { font-size: 11.5pt; font-weight: 600; color: #4c1d95; margin: 14pt 0 4pt; page-break-after: avoid; }
+  h4 { font-size: 10.5pt; font-weight: 600; color: #1a1a1a; margin: 10pt 0 3pt; page-break-after: avoid; }
+
+  /* keep heading + following block together */
+  h2 + p, h2 + ul, h2 + ol, h2 + table, h2 + blockquote { page-break-before: avoid; }
+  h3 + p, h3 + ul, h3 + ol, h3 + table, h3 + blockquote { page-break-before: avoid; }
+
+  p { margin: 0 0 8pt; orphans: 3; widows: 3; }
+  ul, ol { margin: 6pt 0 10pt; padding-left: 18pt; page-break-inside: avoid; }
+  li { margin-bottom: 3pt; }
+  table, blockquote { page-break-inside: avoid; }
+
+  blockquote {
+    margin: 10pt 0;
+    padding: 10pt 14pt;
+    background: #f5f3ff;
+    border-left: 3pt solid #6d28d9;
+    color: #1a1a1a;
+    font-size: 10pt;
+  }
+  blockquote p:first-child strong:first-child { color: #6d28d9; letter-spacing: 0.04em; font-size: 9pt; text-transform: uppercase; }
+
+  code { background: #f5f3ff; padding: 1pt 4pt; border-radius: 2pt; font-size: 9.5pt; color: #4c1d95; }
+  pre { background: #f5f3ff; padding: 8pt; border-radius: 3pt; font-size: 9pt; overflow-x: auto; }
+  pre code { background: none; padding: 0; color: #1a1a1a; }
+
+  table { border-collapse: collapse; width: 100%; margin: 8pt 0 14pt; font-size: 9.5pt; }
+  th { background: #4c1d95; color: white; text-align: left; padding: 6pt 8pt; font-weight: 600; font-size: 9pt; letter-spacing: 0.02em; }
+  td { padding: 5pt 8pt; border-bottom: 0.5pt solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  hr { border: none; border-top: 1pt solid #e5e7eb; margin: 16pt 0; }
+
+  a { color: #6d28d9; text-decoration: none; }
+
+  .header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 0.5pt solid #e5e7eb; padding-bottom: 6pt; margin-bottom: 14pt;
+    font-size: 9pt;
+  }
+  .header .brand { color: #6d28d9; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .header .ref { color: #6b7280; }
+</style>
+</head>
+<body>
+<div class="header">
+  <span class="brand">Propul'SEO</span>
+  <span class="ref">Audit interne · Propal Servicimmo v1</span>
+</div>
+<h1>Audit interne — Propal Servicimmo v1</h1>
+<blockquote>
+<p><strong>Cible</strong> : Lyes (puis Étienne après lecture).
+<strong>Date</strong> : 26 avril 2026
+<strong>Origine</strong> : brainstorm 26/04 — la propal v1 (PDF du 24/04) a été rédigée par Étienne sans avoir bossé sur le code. Sections questionnaire + plateforme à réaligner.
+<strong>Lecture</strong> : 5 minutes.</p>
+</blockquote>
+<hr>
+<h2>1. Décisions actées (brainstorm 26 avril)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Décision</th>
+<th>Choix</th>
+<th>Justification</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>D1</td>
+<td>Questionnaire</td>
+<td>Garder le code (4 écrans branches dynamiques), réécrire propal</td>
+<td>Code livre UX supérieure ; rebuilder = 2-3j perdus</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Phasing</td>
+<td>Ordre narratif propal conservé, livraison réelle inversée (plateforme avant site)</td>
+<td>Évite l&#39;embarras de l&#39;inversion</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Bonus plateforme</td>
+<td>Tout valoriser dans propal v2 (FEC, portail, paramètres, demandes docs)</td>
+<td>Justifie le prix Phase 2</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Phases 3 et 4</td>
+<td>Intactes</td>
+<td>Validées avec Servicimmo</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Format livrable</td>
+<td>Doc client minimaliste + audit court</td>
+<td>Action-oriented</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>2. Écarts code ↔ propal v1 (avant correction)</h2>
+<h3>Questionnaire public</h3>
+<table>
+<thead>
+<tr>
+<th>Vendu propal v1</th>
+<th>Livré dans le code</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>6 étapes linéaires fixes</td>
+<td>4 écrans (Entry → Filling avec branches → Recap prix → Thanks)</td>
+</tr>
+<tr>
+<td>Sélection diagnostics manuelle étape 5</td>
+<td>Calcul auto via moteur règles <code>lib/core/diagnostics/rules.ts</code></td>
+</tr>
+<tr>
+<td>Pas de prix pendant le parcours</td>
+<td>Prix calculé en temps réel pendant la saisie</td>
+</tr>
+<tr>
+<td>Pas mentionné</td>
+<td>Autocomplétion adresse BAN intégrée</td>
+</tr>
+</tbody></table>
+<h3>Plateforme métier</h3>
+<table>
+<thead>
+<tr>
+<th>Vendu propal v1</th>
+<th>Livré dans le code</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3 zones · 7 modules</td>
+<td>3 zones · 9 modules (+ Demandes docs + Portail client)</td>
+</tr>
+<tr>
+<td>Statistiques light</td>
+<td>Statistiques avancées (CA, conversion, par technicien, exports)</td>
+</tr>
+<tr>
+<td>❌ Export FEC</td>
+<td>✅ Export FEC complet (18 colonnes, conforme L.47 A)</td>
+</tr>
+<tr>
+<td>❌ Portail client/prescripteur</td>
+<td>✅ Portail magic link (devis + factures + docs)</td>
+</tr>
+<tr>
+<td>❌ Demandes de documents</td>
+<td>✅ Module complet avec 3 modèles seedés</td>
+</tr>
+<tr>
+<td>❌ Paramétrage admin (grille, règles, modèles, users)</td>
+<td>⚠️ DB prête, UI à finir (cf. §4)</td>
+</tr>
+<tr>
+<td>❌ Branding cabinet</td>
+<td>✅ Configurable via <code>organizations</code></td>
+</tr>
+<tr>
+<td>❌ Multi-utilisateurs avec rôles</td>
+<td>✅ admin / diagnostiqueur / assistant</td>
+</tr>
+<tr>
+<td>Wizard dossier non détaillé</td>
+<td>✅ Wizard parité fiche papier Servicimmo (commit <code>08b256d</code>)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>3. Checklist modifs PDF pour Étienne</h2>
+<p>À faire dans le PDF source de la propal :</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>§4b · page 6</strong> : remplacer le bloc &quot;1 à 6 étapes&quot; par le bloc &quot;Parcours intelligent&quot; → texte fourni dans <code>docs/propal-v2-questionnaire-plateforme.md</code></li>
+<li><input disabled="" type="checkbox"> <strong>§4b · page 6</strong> : remplacer le visuel numéroté 1-6 par un schéma &quot;Type projet → branche dynamique → récap prix&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>§5 · page 8</strong> : remplacer la liste 7 modules par les 9 modules de la version v2 (ajout : Demandes docs en zone 2, Portail client en zone 3)</li>
+<li><input disabled="" type="checkbox"> <strong>§5 · page 8</strong> : ajouter les marqueurs ⭐ &quot;bonus inclus&quot; sur Demandes docs et Portail client</li>
+<li><input disabled="" type="checkbox"> <strong>NOUVELLE §5c · entre page 9 et 10</strong> : insérer la nouvelle section &quot;Conformité &amp; paramétrage&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>§11 Tarification · page 15</strong> : vérifier cohérence du montant Phase 2 vs périmètre étendu (arbitrage : ajuster à la hausse OU vendre les bonus en &quot;offert&quot;)</li>
+<li><input disabled="" type="checkbox"> <strong>§9 Timeline · page 13</strong> : vérifier durée Phase 2 (8 semaines) compatible avec le périmètre étendu — peut nécessiter +2 semaines polish</li>
+<li><input disabled="" type="checkbox"> <strong>Page de garde · page 1</strong> : incrémenter le numéro de version (v2)</li>
+</ul>
+<hr>
+<h2>4. Axes d&#39;amélioration produit (post-signature)</h2>
+<p>Ce qui reste à finir côté code pour matcher la promesse propal v2. Source de vérité : <a href="../.planning/BLOCKERS.md"><code>.planning/BLOCKERS.md</code></a>.</p>
+<h3>Priorité haute (à faire avant kick-off ou en phase 2 polish)</h3>
+<ul>
+<li><strong>UI éditeurs admin</strong> (<code>/app/parametres/grille</code>, <code>/regles</code>, <code>/modeles</code>, <code>/utilisateurs</code>) — backend prêt, RLS OK, manque les écrans CRUD.</li>
+<li><strong>Génération PDF devis/facture</strong> — <code>@react-pdf/renderer</code> installé, colonnes <code>pdf_storage_path</code> prêtes, template à écrire.</li>
+<li><strong>Upload portail demande-documents</strong> — actuellement message &quot;envoyer par mail&quot;, remplacer par signed-upload Supabase Storage.</li>
+</ul>
+<h3>Priorité moyenne</h3>
+<ul>
+<li><strong>DnD Kanban interactif</strong> — backend <code>updateDossierStatus</code> prêt, intégration <code>@dnd-kit/core</code> à faire.</li>
+<li><strong>Vue agenda semaine/jour</strong> — vue mois OK, à arbitrer avec Servicimmo.</li>
+<li><strong>E2E Playwright complets</strong> — 3 parcours critiques (wizard→devis→Stripe, demande docs, FEC).</li>
+<li><strong>Autocompletion BAN dans wizard admin</strong> — existe sur questionnaire public à porter.</li>
+</ul>
+<h3>Blockers externes (Servicimmo doit fournir)</h3>
+<ul>
+<li>🔴 Buckets Storage à créer (3 buckets Supabase)</li>
+<li>🔴 Stripe KYC + Resend domaine DKIM <code>servicimmo.fr</code></li>
+<li>🟠 Grille tarifaire réelle (10 questions à poser)</li>
+<li>🟠 Infos cabinet (SIRET/IBAN/TVA)</li>
+</ul>
+<hr>
+<h2>5. Risques commerciaux à anticiper</h2>
+<h3>&quot;Où sont passées les 6 étapes ?&quot;</h3>
+<p>Si Fanny ou Jacques-Alexandre soulèvent la disparition des 6 étapes du questionnaire, script de réponse :</p>
+<blockquote>
+<p>&quot;On a affiné le parcours en travaillant sur le moteur de règles. Au lieu de 6 étapes fixes pour tout le monde, le questionnaire s&#39;adapte au projet. Vos clients vente n&#39;auront pas les questions location, vos clients location n&#39;auront pas les questions vente. C&#39;est plus court, plus précis, et ça augmente le taux de complétion.&quot;</p>
+</blockquote>
+<h3>Écart de prix perçu (plateforme étendue vs propal v1)</h3>
+<p>La plateforme livrée contient ~30% de modules en plus que la propal v1 (FEC, portail client, demandes docs, paramétrage complet). Deux options à arbitrer <strong>avec Étienne avant signature</strong> :</p>
+<ol>
+<li><strong>Ajuster Phase 2 à la hausse</strong> pour refléter le périmètre étendu. Risque : re-négo, perte du momentum signature.</li>
+<li><strong>Vendre les bonus comme &quot;offerts&quot;</strong> au prix initial. Avantage : effet wow, signature accélérée. Risque : sous-valorisation du travail.</li>
+</ol>
+<p>Recommandation : <strong>option 2</strong> — l&#39;effet wow vaut l&#39;écart de marge, et ça crée une dette d&#39;image positive si on doit upseller en Phase 3-4.</p>
+<h3>Si Étienne refuse certaines modifs</h3>
+<p>Le doc client <code>docs/propal-v2-questionnaire-plateforme.md</code> est self-contained. Étienne peut piocher section par section. Pas de modif tout-ou-rien.</p>
+
+</body>
+</html>
