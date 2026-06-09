@@ -1,104 +1,138 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRightIcon } from "lucide-react";
+import { BugIcon, ZapIcon, DropletIcon, CalendarIcon, ArrowRightIcon } from "lucide-react";
 
-import { Eyebrow } from "./Hero";
+import { Reveal } from "@/components/marketing/Reveal";
 
-type NewsItem = {
+type Article = {
+  img: string;
+  imgAlt: string;
+  tagIcon: React.ReactNode;
   tag: string;
-  date: { d: string; m: string };
+  date: string;
   title: string;
   excerpt: string;
-  color: string;
+  href: string;
 };
 
-/**
- * Stubs de données — à remplacer par les articles Supabase en S3.
- */
-const NEWS: NewsItem[] = [
+const ARTICLES: Article[] = [
   {
-    tag: "DPE",
-    date: { d: "27", m: "Mars 2026" },
-    title: "DPE reconduction du bail, DPE travaux : bientôt de nouvelles obligations ?",
-    excerpt:
-      "Vous reconduisez le contrat de location d'un appartement, d'une maison ou d'un local professionnel ? Vous venez d'engager des travaux…",
-    color: "var(--color-home-saf)",
-  },
-  {
-    tag: "Plomb",
-    date: { d: "25", m: "Fév. 2026" },
-    title: "Plomb avant travaux : le risque au cœur de onze affiches de prévention",
-    excerpt:
-      "La lutte contre l'exposition professionnelle au plomb sur les chantiers de bâtiments anciens est un combat de longue haleine qui…",
-    color: "var(--color-home-slate)",
-  },
-  {
+    img: "/img/si/blog1.jpg",
+    imgAlt: "Amiante avant travaux",
+    tagIcon: <BugIcon className="h-3 w-3" aria-hidden />,
     tag: "Amiante",
-    date: { d: "29", m: "Janv. 2026" },
-    title: "Amiante et rénovation énergétique : attention aux risques dans les bâtiments anciens",
-    excerpt:
-      "La nécessité de réduire les consommations d'énergie des bâtiments pour faire des économies et protéger la planète…",
-    color: "var(--color-home-saf-dark)",
+    date: "Mai 2026",
+    title: "Amiante avant travaux : ce que la polémique sur l'indépendance change pour les propriétaires",
+    excerpt: "Indépendance des opérateurs, fiabilité des repérages : on fait le point sur ce qui évolue et vos obligations avant le moindre chantier.",
+    href: "#",
+  },
+  {
+    img: "/img/si/blog2.jpg",
+    imgAlt: "DPE et bail",
+    tagIcon: <ZapIcon className="h-3 w-3" aria-hidden />,
+    tag: "DPE",
+    date: "Avril 2026",
+    title: "DPE, reconduction de bail et après travaux : vers de nouvelles obligations ?",
+    excerpt: "Renouvellement de location, fin de chantier : zoom sur les cas qui pourraient bientôt exiger un nouveau diagnostic de performance.",
+    href: "#",
+  },
+  {
+    img: "/img/si/blog3.jpg",
+    imgAlt: "Plomb avant travaux",
+    tagIcon: <DropletIcon className="h-3 w-3" aria-hidden />,
+    tag: "Plomb",
+    date: "Avril 2026",
+    title: "Plomb avant travaux : la prévention au cœur de onze affiches",
+    excerpt: "Une campagne de sensibilisation rappelle les bons réflexes face au plomb dans le bâti ancien. Ce qu'il faut en retenir.",
+    href: "#",
   },
 ];
 
+/** Section Actualités & conseils (v-actualites-1) — home.html:306-359 */
 export function Actualites() {
   return (
-    <section className="border-t border-[var(--color-home-line)] bg-white py-24">
-      <div className="mx-auto max-w-[1280px] px-6 md:px-12">
-        <div className="mx-auto mb-14 max-w-[800px] text-center">
-          <div className="inline-flex justify-center">
-            <Eyebrow>Nos dernières actualités</Eyebrow>
-          </div>
-          <h2 className="mx-auto mt-4 mb-4 max-w-[20ch] text-[32px] leading-[1.1] font-medium tracking-[-0.025em] text-[var(--color-home-ink)] sm:text-[40px]">
-            L&apos;évolution réglementaire,{" "}
-            <em className="font-medium text-[var(--color-home-saf-dark)] not-italic">expliquée</em>
-            .
-          </h2>
-          <p className="mx-auto max-w-[55ch] text-[16px] leading-relaxed text-[var(--color-home-muted-2)]">
-            La réglementation du diagnostic immobilier bouge régulièrement. Nos articles vous
-            aident à rester à jour sur vos obligations.
-          </p>
-        </div>
+    <section
+      id="actualites"
+      className="py-[52px] [background:linear-gradient(180deg,var(--color-home-bg)_0%,var(--color-home-saf-bg)_18%,var(--color-home-saf-bg)_82%,var(--color-home-bg)_100%)]"
+    >
+      <div className="mx-auto max-w-[1200px] px-6 md:px-12">
 
-        <div className="grid gap-5 md:grid-cols-3">
-          {NEWS.map((n, i) => (
-            <article
-              key={i}
-              className="overflow-hidden rounded-[14px] border border-[var(--color-home-line)] bg-white"
-            >
-              <div
-                className="relative grid h-[140px] place-items-center text-white"
-                style={{ background: n.color }}
-              >
-                <span className="font-mono text-[11px] tracking-[0.1em] text-white/85 uppercase">
-                  {n.tag}
-                </span>
-                <div
-                  className="absolute right-4 bottom-0 translate-y-1/2 bg-[var(--color-home-slate)] px-3 py-2.5 text-center text-white shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
-                >
-                  <div className="text-[20px] font-semibold leading-none tracking-[-0.02em]">
-                    {n.date.d}
-                  </div>
-                  <div className="mt-0.5 font-mono text-[10px] text-white/70">{n.date.m}</div>
-                </div>
-              </div>
-              <div className="px-6 pt-7 pb-6">
-                <h3 className="mb-2.5 text-[16px] leading-[1.35] font-semibold tracking-[-0.015em] text-[var(--color-home-ink)]">
-                  {n.title}
-                </h3>
-                <p className="mb-4 text-[13px] leading-relaxed text-[var(--color-home-muted-2)]">
-                  {n.excerpt}
-                </p>
-                <Link
-                  href="/actualites"
-                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-home-saf-dark)]"
-                >
-                  Lire l&apos;article <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden />
+        {/* En-tête */}
+        <Reveal direction="up" className="mx-auto mb-14 max-w-[660px] text-center">
+          <span className="font-[family-name:var(--font-sora)] text-[13px] font-semibold tracking-[0.04em] text-[color:var(--color-home-saf-dark)]">
+            Veille réglementaire
+          </span>
+          <h2 className="mt-4 mb-[14px] font-[family-name:var(--font-sora)] text-[clamp(30px,3.4vw,44px)] font-extrabold leading-[1.12] tracking-[-0.02em] text-[color:var(--color-home-ink)]">
+            Actualités &amp; conseils diagnostic
+          </h2>
+          <p className="m-0 font-[family-name:var(--font-inter)] text-[17px] leading-[1.7] text-[color:var(--color-home-muted)]">
+            On suit la réglementation de près pour vous. Chaque mois, nos experts décryptent les
+            nouvelles obligations et leurs conséquences concrètes pour les propriétaires.
+          </p>
+        </Reveal>
+
+        {/* Grille articles */}
+        <div className="grid grid-cols-1 gap-[30px] md:grid-cols-3">
+          {ARTICLES.map((a, i) => (
+            <Reveal key={a.title} direction="up" delay={i * 0.07}>
+              <article className="group flex flex-col overflow-hidden rounded-[14px] border border-[color:var(--color-home-line)] bg-[color:var(--color-home-bg)] shadow-[0_2px_12px_rgba(15,30,58,.06)] transition-all duration-[350ms] hover:-translate-y-2 hover:border-transparent hover:shadow-[0_20px_60px_rgba(15,30,58,.14)]">
+
+                {/* Vignette */}
+                <Link href={a.href} className="relative block aspect-[16/10] overflow-hidden">
+                  <Image
+                    src={a.img}
+                    alt={a.imgAlt}
+                    fill
+                    loading="lazy"
+                    className="object-cover transition-transform duration-[600ms] ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.07]"
+                  />
+                  <span className="absolute left-[14px] top-[14px] inline-flex items-center gap-[7px] rounded-full bg-white/90 px-[13px] py-[7px] font-[family-name:var(--font-sora)] text-[12px] font-bold tracking-[0.04em] text-[color:var(--color-home-saf-dark)] shadow-[0_2px_8px_rgba(15,30,58,.1)] backdrop-blur-[4px] [&_svg]:text-[color:var(--color-home-saf-dark)]">
+                    {a.tagIcon}
+                    {a.tag}
+                  </span>
                 </Link>
-              </div>
-            </article>
+
+                {/* Corps */}
+                <div className="flex flex-1 flex-col px-6 py-6">
+                  <span className="mb-[13px] inline-flex items-center gap-2 font-[family-name:var(--font-sora)] text-[12.5px] font-semibold uppercase tracking-[0.04em] text-[color:var(--color-home-muted)] [&_svg]:text-[color:var(--color-home-saf-dark)]">
+                    <CalendarIcon className="h-3 w-3" aria-hidden />
+                    {a.date}
+                  </span>
+                  <h3 className="mb-3 font-[family-name:var(--font-sora)] text-[18.5px] font-bold leading-[1.32] text-[color:var(--color-home-ink)]">
+                    <Link
+                      href={a.href}
+                      className="transition-colors hover:text-[color:var(--color-home-saf-dark)]"
+                    >
+                      {a.title}
+                    </Link>
+                  </h3>
+                  <p className="mb-5 font-[family-name:var(--font-inter)] text-[14.5px] leading-[1.65] text-[color:var(--color-home-muted)]">
+                    {a.excerpt}
+                  </p>
+                  <Link
+                    href={a.href}
+                    className="mt-auto inline-flex items-center gap-[9px] font-[family-name:var(--font-sora)] text-[14px] font-bold text-[color:var(--color-home-saf-dark)] transition-[gap] hover:gap-[14px]"
+                  >
+                    Lire l&apos;article
+                    <ArrowRightIcon className="h-[14px] w-[14px]" aria-hidden />
+                  </Link>
+                </div>
+              </article>
+            </Reveal>
           ))}
         </div>
+
+        {/* Pied */}
+        <Reveal direction="up" className="mt-[50px] text-center">
+          <Link
+            href="#"
+            className="inline-flex items-center gap-2 rounded-[10px] border border-[color:var(--color-home-line)] bg-transparent px-6 py-3.5 font-[family-name:var(--font-sora)] text-[15px] font-bold text-[color:var(--color-home-ink)] transition-all hover:border-[color:var(--color-home-saf)] hover:bg-[color:var(--color-home-saf-bg)]"
+          >
+            Toutes les actualités
+            <ArrowRightIcon className="h-4 w-4" aria-hidden />
+          </Link>
+        </Reveal>
+
       </div>
     </section>
   );
