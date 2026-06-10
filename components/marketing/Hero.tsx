@@ -82,7 +82,7 @@ export function Hero() {
           <Reveal direction="right">
             <div className="relative">
               <Image
-                src="/img/si/hero1.jpg"
+                src="/img/si/hero3.jpg"
                 alt="Bien immobilier diagnostiqué à Tours"
                 width={1600}
                 height={1063}
