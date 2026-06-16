@@ -10,6 +10,10 @@ import { useQuestionnaireStore } from "@/lib/stores/questionnaire";
 import { Accordion } from "../components/Accordion";
 import { getBranchVars } from "../lib/branch-colors";
 import { BRANCHES } from "../lib/branches";
+import {
+  computeNextAccordion,
+  type AccordionKey as StepAccordionKey,
+} from "./filling/computeNextAccordion";
 import { PROPERTY_TYPE_OPTIONS, URGENCY_OPTIONS } from "./filling/options";
 import { ContactStep } from "./filling/steps/ContactStep";
 import { DelaiStep } from "./filling/steps/DelaiStep";
@@ -32,7 +36,7 @@ type FillingScreenProps = {
   error: string | null;
 };
 
-type AccordionKey = "prop" | "tech" | "existing" | "time" | "contact" | null;
+type AccordionKey = StepAccordionKey | null;
 
 export function FillingScreen({
   branch,
@@ -110,16 +114,17 @@ export function FillingScreen({
 
   const contactSummary = contactDone ? data.phone : undefined;
 
-  // Auto-open du suivant (comportement inchangé)
-  const prevRef = useRef({ propDone, techDone, existingDone, timeDone });
+  // Auto-open du suivant — délégué au moteur pur `computeNextAccordion`.
+  // L'étape optionnelle « Diagnostics déjà valides » (existing) est sautée dans
+  // la chaîne auto : tech complétée → ouvre directement « Délai ». Elle reste
+  // ouvrable manuellement.
+  const prevRef = useRef({ prop: propDone, tech: techDone, time: timeDone });
   useEffect(() => {
-    const p = prevRef.current;
-    if (propDone && !p.propDone && open === "prop") setOpen("tech");
-    else if (techDone && !p.techDone && open === "tech") setOpen("existing");
-    else if (existingDone && !p.existingDone && open === "existing") setOpen("time");
-    else if (timeDone && !p.timeDone && open === "time") setOpen("contact");
-    prevRef.current = { propDone, techDone, existingDone, timeDone };
-  }, [propDone, techDone, existingDone, timeDone, open]);
+    const next = { prop: propDone, tech: techDone, time: timeDone };
+    const target = computeNextAccordion(prevRef.current, next, open);
+    if (target) setOpen(target);
+    prevRef.current = next;
+  }, [propDone, techDone, timeDone, open]);
 
   const completedCount = [propDone, techDone, existingDone, timeDone, contactDone].filter(
     Boolean
