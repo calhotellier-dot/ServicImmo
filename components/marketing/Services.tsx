@@ -57,7 +57,7 @@ export function Services() {
       id="services"
       className="bg-[color:var(--color-home-bg)] py-11"
     >
-      <div className="mx-auto max-w-[1200px] px-6 md:px-12">
+      <div className="mx-auto max-w-[var(--container,1280px)] px-6 md:px-8">
 
         {/* En-tête */}
         <Reveal direction="up" className="mb-16 max-w-[620px]">

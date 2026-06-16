@@ -21,7 +21,7 @@ export function Hero() {
         className="pointer-events-none absolute top-[-12%] right-[-6%] z-0 h-[62%] w-[46%] rounded-[48%_52%_60%_40%/55%_48%_52%_45%] bg-[color:var(--color-home-saf-bg)] opacity-70 blur-[2px]"
       />
 
-      <div className="relative z-[1] mx-auto max-w-[1200px] px-6 pt-10 pb-16 md:px-12">
+      <div className="relative z-[1] mx-auto max-w-[var(--container,1280px)] px-6 pt-10 pb-16 md:px-8">
         <div className="grid items-center gap-12 md:grid-cols-[1.05fr_.95fr]">
 
           {/* ── Colonne gauche : copy ── */}

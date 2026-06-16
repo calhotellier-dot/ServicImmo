@@ -19,7 +19,7 @@ export function Testimonials() {
       id="avis"
       className="py-9 [background:linear-gradient(180deg,var(--color-home-bg)_0%,var(--color-home-saf-bg)_18%,var(--color-home-saf-bg)_82%,var(--color-home-bg)_100%)]"
     >
-      <div className="mx-auto max-w-[1200px] px-6 md:px-12">
+      <div className="mx-auto max-w-[var(--container,1280px)] px-6 md:px-8">
 
         {/* En-tête */}
         <Reveal direction="up" className="mx-auto mb-10 max-w-[640px] text-center">
