@@ -37,7 +37,7 @@ export function Footer() {
   return (
     <footer className="bg-[color:var(--color-si-petrole)] text-[#c7d2e0]">
       {/* Top */}
-      <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-10 px-6 pb-14 pt-[84px] sm:grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_1.1fr] md:px-8">
+      <div className="grid grid-cols-1 gap-10 px-6 pb-14 pt-[84px] sm:grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_1.1fr] md:px-10 lg:px-16">
         {/* Colonne 1 : brand */}
         <div>
           <div className="mb-4">
@@ -83,7 +83,7 @@ export function Footer() {
 
       {/* Bottom */}
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-4 px-6 py-[22px] md:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-[22px] md:px-10 lg:px-16">
           <p className="m-0 text-[13.5px] text-[#8295ab]">
             © 2026 Servicimmo — Diagnostics immobiliers à Tours. Tous droits réservés.
           </p>
