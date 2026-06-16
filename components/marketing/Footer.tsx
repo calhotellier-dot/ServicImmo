@@ -83,11 +83,11 @@ export function Footer() {
 
       {/* Bottom */}
       <div className="border-t border-white/10">
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-[22px] md:px-10 lg:px-16">
-          <p className="m-0 text-[13.5px] text-[#8295ab]">
-            © 2026 Servicimmo — Diagnostics immobiliers à Tours. Tous droits réservés.
+        <div className="grid grid-cols-1 items-center gap-3 px-6 py-[22px] text-center md:grid-cols-[1fr_auto_1fr] md:px-10 lg:px-16">
+          <p className="m-0 text-[13.5px] text-[#8295ab] md:justify-self-start md:text-left">
+            © 2026 Servicimmo
           </p>
-          <p className="m-0 text-center text-[13.5px] text-[#8295ab]">
+          <p className="m-0 text-[13.5px] text-[#8295ab] md:justify-self-center">
             Fait avec passion par{" "}
             <a
               href="https://propulseo-site.com"
@@ -98,7 +98,7 @@ export function Footer() {
               Propul&apos;SEO
             </a>
           </p>
-          <div className="flex gap-[10px]">
+          <div className="flex justify-center gap-[10px] md:justify-self-end">
             <SocialLink href="#" icon={FacebookIcon} label="Facebook" />
             <SocialLink href="#" icon={InstagramIcon} label="Instagram" />
             <SocialLink href="#" icon={LinkedinIcon} label="LinkedIn" />
