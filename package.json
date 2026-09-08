@@ -31,6 +31,7 @@
     "@react-email/components": "^0.0.31",
     "@react-email/render": "^1.0.3",
     "@react-pdf/renderer": "^4.5.1",
+    "@sentry/nextjs": "10.73.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.104.0",
     "class-variance-authority": "^0.7.1",
