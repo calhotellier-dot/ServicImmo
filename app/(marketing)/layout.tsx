@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Script from "next/script";
 import { Sora, Inter, Fredoka } from "next/font/google";
 
 import { Header } from "@/components/marketing/Header";
@@ -37,6 +38,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       className={`${sora.variable} ${inter.variable} ${fredoka.variable} font-[family-name:var(--font-inter)] text-[color:var(--color-home-ink)] [background:var(--color-home-bg)]`}
     >
       <SplashIntro />
+      <Script id="umami-bootstrap" src="/umami.js" strategy="afterInteractive" />
       <QuoteModalProvider>
         <Header />
         <main className="min-h-[calc(100dvh-3.5rem)] flex-1">{children}</main>
